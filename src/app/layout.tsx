@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://frontend-roulette-nexasoul.vercel.app"),
   title: "FRONTEND ROULETTE — NEXASOUL | Gol D. Roger One Piece Edition",
   description: "Team-based frontend hackathon & ideathon. Spin the Grand Line Roulette wheel of destiny for random problem statements and twists. Assemble your pirate crew and claim the ultimate bounty!",
   keywords: ["Frontend Roulette", "NexaSoul", "Hackathon", "One Piece", "Gol D. Roger", "Frontend Development", "Ideathon", "Web Development"],
