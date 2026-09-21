@@ -24,6 +24,7 @@ interface CrewMember {
   name: string;
   email: string;
   role: string;
+  rollNo?: string;
 }
 
 interface RegisteredCrew {
@@ -60,17 +61,20 @@ export default function RegistrationPortal() {
   // Member 2
   const [m2Name, setM2Name] = useState("");
   const [m2Email, setM2Email] = useState("");
+  const [m2Roll, setM2Roll] = useState("");
   const [m2Role, setM2Role] = useState("Frontend Engineer");
 
   // Member 3
   const [m3Name, setM3Name] = useState("");
   const [m3Email, setM3Email] = useState("");
+  const [m3Roll, setM3Roll] = useState("");
   const [m3Role, setM3Role] = useState("UI/UX Designer");
 
   // Member 4 (Optional)
   const [hasMember4, setHasMember4] = useState(false);
   const [m4Name, setM4Name] = useState("");
   const [m4Email, setM4Email] = useState("");
+  const [m4Roll, setM4Roll] = useState("");
   const [m4Role, setM4Role] = useState("Full Stack / Integration");
 
   // Registration state
@@ -92,8 +96,14 @@ export default function RegistrationPortal() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!crewName || !captainName || !captainEmail || !m2Name || !m3Name) {
-      alert("Please fill in the required fields for at least 3 pirate crew members!");
+    if (!crewName || !captainName || !captainEmail || !captainRoll || !m2Name || !m2Email || !m2Roll || !m3Name || !m3Email || !m3Roll) {
+      alert("Please fill in all required fields (Full Name, Email & College ID/Roll Number) for the Captain and at least 2 Crew Mates!");
+      soundFX.playBuzzer();
+      return;
+    }
+
+    if (hasMember4 && (!m4Name || !m4Email || !m4Roll)) {
+      alert("Please complete Member 4 details (Full Name, Email & College ID/Roll Number) or uncheck the 4th member option.");
       soundFX.playBuzzer();
       return;
     }
@@ -114,9 +124,9 @@ export default function RegistrationPortal() {
         rollNo: captainRoll,
         github: captainGithub,
       },
-      member2: { name: m2Name, email: m2Email, role: m2Role },
-      member3: { name: m3Name, email: m3Email, role: m3Role },
-      member4: hasMember4 ? { name: m4Name, email: m4Email, role: m4Role } : undefined,
+      member2: { name: m2Name, email: m2Email, role: m2Role, rollNo: m2Roll },
+      member3: { name: m3Name, email: m3Email, role: m3Role, rollNo: m3Roll },
+      member4: hasMember4 ? { name: m4Name, email: m4Email, role: m4Role, rollNo: m4Roll } : undefined,
       registeredAt: new Date().toLocaleDateString(),
       bounty: bountyAmount,
     };
@@ -142,6 +152,40 @@ export default function RegistrationPortal() {
       setRegisteredCrew(null);
       soundFX.playCoin();
     }
+  };
+
+  const inputStyle: React.CSSProperties = {
+    width: "100%",
+    padding: "0.75rem 0.85rem",
+    borderRadius: "6px",
+    border: "1.5px solid #c9a96e",
+    backgroundColor: "#ffffff",
+    color: "#1e1008",
+    fontSize: "0.92rem",
+    fontWeight: 500,
+    colorScheme: "light",
+    boxShadow: "inset 0 1px 2px rgba(0, 0, 0, 0.06)",
+    transition: "all 0.2s ease",
+  };
+
+  const labelStyle: React.CSSProperties = {
+    display: "flex",
+    alignItems: "center",
+    gap: "0.4rem",
+    fontSize: "0.82rem",
+    fontWeight: 700,
+    color: "#451a03",
+    marginBottom: "0.35rem",
+    letterSpacing: "0.02em",
+  };
+
+  const memberCardStyle: React.CSSProperties = {
+    background: "#ffffff",
+    border: "1.5px solid #d4b483",
+    borderRadius: "8px",
+    padding: "1.2rem 1.25rem",
+    marginBottom: "1.2rem",
+    boxShadow: "0 3px 10px rgba(90, 40, 10, 0.07)",
   };
 
   return (
@@ -317,23 +361,26 @@ export default function RegistrationPortal() {
                 color: "#2c1810",
               }}
             >
-              <div style={{ fontWeight: 800, color: "#78350f", marginBottom: "0.3rem" }}>
+              <div style={{ fontWeight: 800, color: "#78350f", marginBottom: "0.4rem", display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                <Users size={15} color="#991b1b" />
                 CREW MANIFEST (B4 UCRD):
               </div>
-              <div>
-                <strong>Captain:</strong> {registeredCrew.captain.name} ({registeredCrew.captain.email})
-              </div>
-              <div>
-                <strong>Member 2:</strong> {registeredCrew.member2.name} — {registeredCrew.member2.role}
-              </div>
-              <div>
-                <strong>Member 3:</strong> {registeredCrew.member3.name} — {registeredCrew.member3.role}
-              </div>
-              {registeredCrew.member4 && (
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
                 <div>
-                  <strong>Member 4:</strong> {registeredCrew.member4.name} — {registeredCrew.member4.role}
+                  <strong>Captain:</strong> {registeredCrew.captain.name} {registeredCrew.captain.rollNo ? `(Roll: ${registeredCrew.captain.rollNo})` : ""} — {registeredCrew.captain.email}
                 </div>
-              )}
+                <div>
+                  <strong>Member 2:</strong> {registeredCrew.member2.name} {registeredCrew.member2.rollNo ? `(Roll: ${registeredCrew.member2.rollNo})` : ""} — {registeredCrew.member2.email}
+                </div>
+                <div>
+                  <strong>Member 3:</strong> {registeredCrew.member3.name} {registeredCrew.member3.rollNo ? `(Roll: ${registeredCrew.member3.rollNo})` : ""} — {registeredCrew.member3.email}
+                </div>
+                {registeredCrew.member4 && (
+                  <div>
+                    <strong>Member 4:</strong> {registeredCrew.member4.name} {registeredCrew.member4.rollNo ? `(Roll: ${registeredCrew.member4.rollNo})` : ""} — {registeredCrew.member4.email}
+                  </div>
+                )}
+              </div>
             </div>
 
             <div
@@ -437,14 +484,10 @@ export default function RegistrationPortal() {
                     placeholder="e.g. Mugiwara Coders"
                     value={crewName}
                     onChange={(e) => setCrewName(e.target.value)}
+                    className="parchment-input"
                     style={{
-                      width: "100%",
+                      ...inputStyle,
                       padding: "0.75rem",
-                      borderRadius: "4px",
-                      border: "1px solid var(--parchment-border)",
-                      background: "#fff",
-                      fontSize: "0.95rem",
-                      color: "#1e1008",
                     }}
                   />
                 </div>
@@ -466,14 +509,11 @@ export default function RegistrationPortal() {
                     onChange={(e) =>
                       setDivision(e.target.value as "Freshers (Level 1)" | "Senior (Levels 2 & 3)")
                     }
+                    className="parchment-input"
                     style={{
-                      width: "100%",
+                      ...inputStyle,
                       padding: "0.75rem",
-                      borderRadius: "4px",
-                      border: "1px solid var(--parchment-border)",
-                      background: "#fff",
-                      fontSize: "0.95rem",
-                      color: "#1e1008",
+                      cursor: "pointer",
                     }}
                   >
                     <option value="Freshers (Level 1)">1st Year Freshers (Level 1 Roulette)</option>
@@ -548,26 +588,29 @@ export default function RegistrationPortal() {
                 style={{
                   display: "grid",
                   gridTemplateColumns: "1fr",
-                  gap: "1rem",
+                  gap: "1.1rem",
                 }}
                 className="form-row-2"
               >
                 <div>
-                  <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 700, color: "#451a03", marginBottom: "0.3rem" }}>
+                  <label style={labelStyle}>
+                    <User size={15} color="#991b1b" />
                     CAPTAIN FULL NAME *
                   </label>
                   <input
                     type="text"
                     required
-                    placeholder="Monkey D. Luffy"
+                    placeholder="e.g. Monkey D. Luffy"
                     value={captainName}
                     onChange={(e) => setCaptainName(e.target.value)}
-                    style={{ width: "100%", padding: "0.65rem", borderRadius: "4px", border: "1px solid var(--parchment-border)", background: "#fff" }}
+                    className="parchment-input"
+                    style={inputStyle}
                   />
                 </div>
 
                 <div>
-                  <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 700, color: "#451a03", marginBottom: "0.3rem" }}>
+                  <label style={labelStyle}>
+                    <Mail size={15} color="#991b1b" />
                     EMAIL ADDRESS *
                   </label>
                   <input
@@ -576,12 +619,14 @@ export default function RegistrationPortal() {
                     placeholder="captain@grandline.dev"
                     value={captainEmail}
                     onChange={(e) => setCaptainEmail(e.target.value)}
-                    style={{ width: "100%", padding: "0.65rem", borderRadius: "4px", border: "1px solid var(--parchment-border)", background: "#fff" }}
+                    className="parchment-input"
+                    style={inputStyle}
                   />
                 </div>
 
                 <div>
-                  <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 700, color: "#451a03", marginBottom: "0.3rem" }}>
+                  <label style={labelStyle}>
+                    <Phone size={15} color="#991b1b" />
                     PHONE / WHATSAPP *
                   </label>
                   <input
@@ -590,12 +635,14 @@ export default function RegistrationPortal() {
                     placeholder="+91 98765 43210"
                     value={captainPhone}
                     onChange={(e) => setCaptainPhone(e.target.value)}
-                    style={{ width: "100%", padding: "0.65rem", borderRadius: "4px", border: "1px solid var(--parchment-border)", background: "#fff" }}
+                    className="parchment-input"
+                    style={inputStyle}
                   />
                 </div>
 
                 <div>
-                  <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 700, color: "#451a03", marginBottom: "0.3rem" }}>
+                  <label style={labelStyle}>
+                    <Hash size={15} color="#991b1b" />
                     COLLEGE ID / ROLL NUMBER *
                   </label>
                   <input
@@ -604,7 +651,8 @@ export default function RegistrationPortal() {
                     placeholder="e.g. 23BCE1004"
                     value={captainRoll}
                     onChange={(e) => setCaptainRoll(e.target.value)}
-                    style={{ width: "100%", padding: "0.65rem", borderRadius: "4px", border: "1px solid var(--parchment-border)", background: "#fff" }}
+                    className="parchment-input"
+                    style={inputStyle}
                   />
                 </div>
               </div>
@@ -630,111 +678,271 @@ export default function RegistrationPortal() {
               </h3>
 
               {/* Member 2 */}
-              <div
-                style={{
-                  background: "#fff",
-                  border: "1px solid var(--parchment-border)",
-                  padding: "1rem",
-                  borderRadius: "4px",
-                  marginBottom: "1rem",
-                }}
-              >
-                <div style={{ fontSize: "0.85rem", fontWeight: 800, color: "#78350f", marginBottom: "0.5rem" }}>
-                  MEMBER 2 DETAILS
+              <div style={memberCardStyle}>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    marginBottom: "0.85rem",
+                    borderBottom: "1px dashed #d4b483",
+                    paddingBottom: "0.45rem",
+                  }}
+                >
+                  <div style={{ display: "flex", alignItems: "center", gap: "0.45rem", fontSize: "0.92rem", fontWeight: 800, color: "#78350f" }}>
+                    <Users size={16} color="#991b1b" />
+                    MEMBER 2 DETAILS
+                  </div>
+                  <span
+                    style={{
+                      fontSize: "0.75rem",
+                      background: "#fef3c7",
+                      color: "#92400e",
+                      padding: "0.2rem 0.6rem",
+                      borderRadius: "4px",
+                      fontWeight: 700,
+                      border: "1px solid #fde68a",
+                    }}
+                  >
+                    Crew Mate 2 *
+                  </span>
                 </div>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.8rem" }} className="form-subgrid">
-                  <input
-                    type="text"
-                    required
-                    placeholder="Full Name *"
-                    value={m2Name}
-                    onChange={(e) => setM2Name(e.target.value)}
-                    style={{ padding: "0.6rem", borderRadius: "4px", border: "1px solid #ccc" }}
-                  />
-                  <input
-                    type="email"
-                    required
-                    placeholder="Email Address *"
-                    value={m2Email}
-                    onChange={(e) => setM2Email(e.target.value)}
-                    style={{ padding: "0.6rem", borderRadius: "4px", border: "1px solid #ccc" }}
-                  />
+
+                <div className="form-member-grid">
+                  <div>
+                    <label style={labelStyle}>
+                      <User size={14} color="#991b1b" />
+                      FULL NAME *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. Roronoa Zoro"
+                      value={m2Name}
+                      onChange={(e) => setM2Name(e.target.value)}
+                      className="parchment-input"
+                      style={inputStyle}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={labelStyle}>
+                      <Mail size={14} color="#991b1b" />
+                      EMAIL ADDRESS *
+                    </label>
+                    <input
+                      type="email"
+                      required
+                      placeholder="zoro@grandline.dev"
+                      value={m2Email}
+                      onChange={(e) => setM2Email(e.target.value)}
+                      className="parchment-input"
+                      style={inputStyle}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={labelStyle}>
+                      <Hash size={14} color="#991b1b" />
+                      COLLEGE ID / ROLL NUMBER *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. 23BCE1042"
+                      value={m2Roll}
+                      onChange={(e) => setM2Roll(e.target.value)}
+                      className="parchment-input"
+                      style={inputStyle}
+                    />
+                  </div>
                 </div>
               </div>
 
               {/* Member 3 */}
-              <div
-                style={{
-                  background: "#fff",
-                  border: "1px solid var(--parchment-border)",
-                  padding: "1rem",
-                  borderRadius: "4px",
-                  marginBottom: "1rem",
-                }}
-              >
-                <div style={{ fontSize: "0.85rem", fontWeight: 800, color: "#78350f", marginBottom: "0.5rem" }}>
-                  MEMBER 3 DETAILS
+              <div style={memberCardStyle}>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    marginBottom: "0.85rem",
+                    borderBottom: "1px dashed #d4b483",
+                    paddingBottom: "0.45rem",
+                  }}
+                >
+                  <div style={{ display: "flex", alignItems: "center", gap: "0.45rem", fontSize: "0.92rem", fontWeight: 800, color: "#78350f" }}>
+                    <Users size={16} color="#991b1b" />
+                    MEMBER 3 DETAILS
+                  </div>
+                  <span
+                    style={{
+                      fontSize: "0.75rem",
+                      background: "#fef3c7",
+                      color: "#92400e",
+                      padding: "0.2rem 0.6rem",
+                      borderRadius: "4px",
+                      fontWeight: 700,
+                      border: "1px solid #fde68a",
+                    }}
+                  >
+                    Crew Mate 3 *
+                  </span>
                 </div>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.8rem" }} className="form-subgrid">
-                  <input
-                    type="text"
-                    required
-                    placeholder="Full Name *"
-                    value={m3Name}
-                    onChange={(e) => setM3Name(e.target.value)}
-                    style={{ padding: "0.6rem", borderRadius: "4px", border: "1px solid #ccc" }}
-                  />
-                  <input
-                    type="email"
-                    required
-                    placeholder="Email Address *"
-                    value={m3Email}
-                    onChange={(e) => setM3Email(e.target.value)}
-                    style={{ padding: "0.6rem", borderRadius: "4px", border: "1px solid #ccc" }}
-                  />
+
+                <div className="form-member-grid">
+                  <div>
+                    <label style={labelStyle}>
+                      <User size={14} color="#991b1b" />
+                      FULL NAME *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. Nami"
+                      value={m3Name}
+                      onChange={(e) => setM3Name(e.target.value)}
+                      className="parchment-input"
+                      style={inputStyle}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={labelStyle}>
+                      <Mail size={14} color="#991b1b" />
+                      EMAIL ADDRESS *
+                    </label>
+                    <input
+                      type="email"
+                      required
+                      placeholder="nami@grandline.dev"
+                      value={m3Email}
+                      onChange={(e) => setM3Email(e.target.value)}
+                      className="parchment-input"
+                      style={inputStyle}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={labelStyle}>
+                      <Hash size={14} color="#991b1b" />
+                      COLLEGE ID / ROLL NUMBER *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. 23BCE1088"
+                      value={m3Roll}
+                      onChange={(e) => setM3Roll(e.target.value)}
+                      className="parchment-input"
+                      style={inputStyle}
+                    />
+                  </div>
                 </div>
               </div>
 
               {/* Optional Member 4 Toggle */}
-              <div>
-                <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer", fontSize: "0.9rem", color: "#451a03", fontWeight: 700 }}>
+              <div style={{ marginTop: "0.6rem" }}>
+                <label
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "0.6rem",
+                    cursor: "pointer",
+                    fontSize: "0.92rem",
+                    color: "#451a03",
+                    fontWeight: 700,
+                    background: "#fef3c7",
+                    padding: "0.6rem 1rem",
+                    borderRadius: "6px",
+                    border: "1px solid #fde68a",
+                  }}
+                >
                   <input
                     type="checkbox"
                     checked={hasMember4}
                     onChange={(e) => setHasMember4(e.target.checked)}
-                    style={{ width: "18px", height: "18px" }}
+                    style={{ width: "18px", height: "18px", accentColor: "#b45309", cursor: "pointer" }}
                   />
                   Add 4th Pirate Crew Member (Optional - Max 4 allowed)
                 </label>
 
                 {hasMember4 && (
-                  <div
-                    style={{
-                      background: "#fff",
-                      border: "1px solid var(--parchment-border)",
-                      padding: "1rem",
-                      borderRadius: "4px",
-                      marginTop: "0.8rem",
-                    }}
-                  >
-                    <div style={{ fontSize: "0.85rem", fontWeight: 800, color: "#78350f", marginBottom: "0.5rem" }}>
-                      MEMBER 4 DETAILS
+                  <div style={{ ...memberCardStyle, marginTop: "1rem" }}>
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        marginBottom: "0.85rem",
+                        borderBottom: "1px dashed #d4b483",
+                        paddingBottom: "0.45rem",
+                      }}
+                    >
+                      <div style={{ display: "flex", alignItems: "center", gap: "0.45rem", fontSize: "0.92rem", fontWeight: 800, color: "#78350f" }}>
+                        <Users size={16} color="#991b1b" />
+                        MEMBER 4 DETAILS
+                      </div>
+                      <span
+                        style={{
+                          fontSize: "0.75rem",
+                          background: "#e0e7ff",
+                          color: "#3730a3",
+                          padding: "0.2rem 0.6rem",
+                          borderRadius: "4px",
+                          fontWeight: 700,
+                          border: "1px solid #c7d2fe",
+                        }}
+                      >
+                        4th Crew Mate (Optional)
+                      </span>
                     </div>
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.8rem" }} className="form-subgrid">
-                      <input
-                        type="text"
-                        placeholder="Full Name"
-                        value={m4Name}
-                        onChange={(e) => setM4Name(e.target.value)}
-                        style={{ padding: "0.6rem", borderRadius: "4px", border: "1px solid #ccc" }}
-                      />
-                      <input
-                        type="email"
-                        placeholder="Email Address"
-                        value={m4Email}
-                        onChange={(e) => setM4Email(e.target.value)}
-                        style={{ padding: "0.6rem", borderRadius: "4px", border: "1px solid #ccc" }}
-                      />
+
+                    <div className="form-member-grid">
+                      <div>
+                        <label style={labelStyle}>
+                          <User size={14} color="#991b1b" />
+                          FULL NAME
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="e.g. Usopp"
+                          value={m4Name}
+                          onChange={(e) => setM4Name(e.target.value)}
+                          className="parchment-input"
+                          style={inputStyle}
+                        />
+                      </div>
+
+                      <div>
+                        <label style={labelStyle}>
+                          <Mail size={14} color="#991b1b" />
+                          EMAIL ADDRESS
+                        </label>
+                        <input
+                          type="email"
+                          placeholder="usopp@grandline.dev"
+                          value={m4Email}
+                          onChange={(e) => setM4Email(e.target.value)}
+                          className="parchment-input"
+                          style={inputStyle}
+                        />
+                      </div>
+
+                      <div>
+                        <label style={labelStyle}>
+                          <Hash size={14} color="#991b1b" />
+                          COLLEGE ID / ROLL NUMBER
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="e.g. 23BCE1105"
+                          value={m4Roll}
+                          onChange={(e) => setM4Roll(e.target.value)}
+                          className="parchment-input"
+                          style={inputStyle}
+                        />
+                      </div>
                     </div>
                   </div>
                 )}
@@ -761,15 +969,36 @@ export default function RegistrationPortal() {
       )}
 
       <style jsx>{`
+        .form-member-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 0.9rem;
+        }
         @media (min-width: 768px) {
           .form-row-2 {
             grid-template-columns: 1fr 1fr !important;
           }
         }
-        @media (max-width: 600px) {
-          .form-subgrid {
+        @media (max-width: 820px) {
+          .form-member-grid {
             grid-template-columns: 1fr !important;
           }
+        }
+        .parchment-input {
+          background-color: #ffffff !important;
+          color: #1e1008 !important;
+          color-scheme: light !important;
+          border: 1.5px solid #c9a96e !important;
+        }
+        .parchment-input::placeholder {
+          color: #8c7355 !important;
+          opacity: 0.85 !important;
+        }
+        .parchment-input:focus {
+          outline: none !important;
+          border-color: #b45309 !important;
+          background-color: #ffffff !important;
+          box-shadow: 0 0 0 3px rgba(180, 83, 9, 0.22), inset 0 1px 2px rgba(0, 0, 0, 0.05) !important;
         }
       `}</style>
     </section>

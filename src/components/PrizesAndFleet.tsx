@@ -2,43 +2,16 @@
 
 import React, { useState } from "react";
 import { EVENT_DATA } from "@/data/eventInfo";
-import { soundFX } from "@/utils/soundEffects";
 import {
   Trophy,
   Medal,
-  Award,
-  Sparkles,
-  Zap,
-  Flame,
   Shield,
   UserCheck,
-  CheckCircle2,
-  AlertTriangle,
-  Calculator,
   Compass,
 } from "lucide-react";
 
 export default function PrizesAndFleet() {
-  const [activeSection, setActiveSection] = useState<"prizes" | "fleet" | "rubric">("prizes");
-
-  // Interactive Scoring Calculator state
-  const [scores, setScores] = useState<{ [key: string]: number }>({
-    "Problem Understanding": 9,
-    "Innovation & Creativity": 18,
-    "UI/UX Design": 19,
-    "Frontend Implementation": 23,
-    Functionality: 14,
-    Presentation: 5,
-    "Teamwork / Collaboration": 5,
-  });
-
-  const [hasIllegalReroll, setHasIllegalReroll] = useState(false);
-
-  const calculateTotal = () => {
-    let sum = Object.values(scores).reduce((a, b) => a + b, 0);
-    if (hasIllegalReroll) sum -= 5;
-    return Math.max(0, sum);
-  };
+  const [activeSection, setActiveSection] = useState<"prizes" | "fleet">("prizes");
 
   return (
     <section
@@ -88,7 +61,7 @@ export default function PrizesAndFleet() {
             lineHeight: 1.6,
           }}
         >
-          Inspect the grand trophies, medals, High Admirals of the jury, mentors, and the official 100-point evaluation matrix.
+          Inspect the grand trophies, medals, High Admirals of the jury, and the senior mentors.
         </p>
       </div>
 
@@ -105,16 +78,12 @@ export default function PrizesAndFleet() {
         {[
           { id: "prizes", label: "Prizes & Bounties", icon: Trophy },
           { id: "fleet", label: "Admirals & Mentors", icon: Shield },
-          { id: "rubric", label: "100-Pt Scoring Matrix", icon: Calculator },
         ].map(({ id, label, icon: Icon }) => {
           const isActive = activeSection === id;
           return (
             <button
               key={id}
-              onClick={() => {
-                setActiveSection(id as typeof activeSection);
-                soundFX.playWheelTick(1.2);
-              }}
+              onClick={() => setActiveSection(id as typeof activeSection)}
               style={{
                 display: "flex",
                 alignItems: "center",
@@ -381,226 +350,9 @@ export default function PrizesAndFleet() {
             </div>
           </div>
 
-          {/* Core Team Responsibilities */}
-          <div className="parchment-card" style={{ padding: "2rem" }}>
-            <h3
-              className="font-pirate"
-              style={{ fontSize: "2rem", color: "#78350f", marginBottom: "1.2rem", textAlign: "center" }}
-            >
-              CORE CREW RESPONSIBILITIES (PDF PAGE 10)
-            </h3>
-
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
-                gap: "1rem",
-              }}
-            >
-              {EVENT_DATA.coreTeamRoles.map((role, idx) => (
-                <div
-                  key={idx}
-                  style={{
-                    background: "#fff",
-                    border: "1px solid var(--parchment-border)",
-                    borderRadius: "4px",
-                    padding: "0.9rem",
-                  }}
-                >
-                  <div style={{ fontSize: "0.75rem", fontWeight: 800, color: "#991b1b" }}>
-                    {role.role.toUpperCase()}
-                  </div>
-                  <div style={{ fontSize: "0.95rem", fontWeight: 700, color: "#1e1008", marginTop: "0.2rem" }}>
-                    {role.members.join(", ")}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
         </div>
       )}
 
-      {/* Section 3: 100-Point Evaluation Rubric with Live Calculator */}
-      {activeSection === "rubric" && (
-        <div style={{ maxWidth: "900px", margin: "0 auto" }}>
-          {/* Penalty Banner */}
-          <div
-            style={{
-              background: "rgba(185, 28, 28, 0.25)",
-              border: "2px solid #ef4444",
-              borderRadius: "6px",
-              padding: "1rem 1.4rem",
-              marginBottom: "2rem",
-              display: "flex",
-              alignItems: "center",
-              gap: "1rem",
-            }}
-          >
-            <AlertTriangle size={32} color="#ef4444" style={{ flexShrink: 0 }} />
-            <div style={{ fontSize: "0.95rem", color: "#fca5a5", lineHeight: 1.5 }}>
-              <strong>MANDATORY JURY REGULATION (PDF PAGE 12):</strong>
-              <br />
-              &quot;If any team asks for a re-roll who have NOT played and won the official mini-game, an automatic <strong>-5 Marks penalty</strong> will be deducted from their final score!&quot;
-            </div>
-          </div>
-
-          {/* Interactive Calculator Card */}
-          <div className="parchment-card" style={{ padding: "2.2rem", border: "4px solid #b45309" }}>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                borderBottom: "2px solid var(--parchment-border)",
-                paddingBottom: "1rem",
-                marginBottom: "1.5rem",
-                flexWrap: "wrap",
-                gap: "1rem",
-              }}
-            >
-              <div>
-                <h3 className="font-pirate" style={{ fontSize: "2.2rem", color: "#2c1810" }}>
-                  100-POINT JURY EVALUATION MATRIX
-                </h3>
-                <div style={{ fontSize: "0.85rem", color: "#78350f" }}>
-                  Adjust sliders below to simulate a crew&apos;s evaluation score!
-                </div>
-              </div>
-
-              {/* Total Aggregate Score Display */}
-              <div
-                style={{
-                  background: "#1e1008",
-                  padding: "0.8rem 1.5rem",
-                  borderRadius: "6px",
-                  border: "2px solid #fbbf24",
-                  textAlign: "center",
-                }}
-              >
-                <div style={{ fontSize: "0.7rem", color: "#fbbf24", fontWeight: 800 }}>
-                  TOTAL SCORE
-                </div>
-                <div
-                  className="font-heading"
-                  style={{
-                    fontSize: "2.2rem",
-                    fontWeight: 900,
-                    color: calculateTotal() >= 80 ? "#4ade80" : "#fef08a",
-                  }}
-                >
-                  {calculateTotal()} <span style={{ fontSize: "1.1rem", color: "#94a3b8" }}>/ 100</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Criteria rows */}
-            <div style={{ display: "flex", flexDirection: "column", gap: "1.2rem" }}>
-              {EVENT_DATA.evaluationCriteria.map((item) => (
-                <div
-                  key={item.category}
-                  style={{
-                    background: "#fff",
-                    border: "1px solid var(--parchment-border)",
-                    borderRadius: "4px",
-                    padding: "1rem 1.2rem",
-                  }}
-                >
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      marginBottom: "0.4rem",
-                    }}
-                  >
-                    <div>
-                      <span
-                        className="font-heading"
-                        style={{ fontSize: "0.95rem", fontWeight: 700, color: "#1e1008" }}
-                      >
-                        {item.category}
-                      </span>
-                      <div style={{ fontSize: "0.8rem", color: "#78350f" }}>
-                        {item.description}
-                      </div>
-                    </div>
-
-                    <div
-                      className="font-heading"
-                      style={{ fontSize: "1.1rem", fontWeight: 800, color: "#991b1b" }}
-                    >
-                      {scores[item.category] || 0} / {item.marks} M
-                    </div>
-                  </div>
-
-                  <input
-                    type="range"
-                    min="0"
-                    max={item.marks}
-                    value={scores[item.category] || 0}
-                    onChange={(e) =>
-                      setScores({ ...scores, [item.category]: Number(e.target.value) })
-                    }
-                    style={{ width: "100%", accentColor: "#991b1b", cursor: "pointer" }}
-                  />
-                </div>
-              ))}
-
-              {/* -5 Penalty Simulation Checkbox */}
-              <div
-                style={{
-                  background: hasIllegalReroll ? "#fee2e2" : "#fff",
-                  border: hasIllegalReroll ? "2px solid #ef4444" : "1px solid var(--parchment-border)",
-                  borderRadius: "4px",
-                  padding: "1rem",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}
-              >
-                <div>
-                  <label
-                    style={{
-                      fontWeight: 800,
-                      color: hasIllegalReroll ? "#991b1b" : "#451a03",
-                      fontSize: "0.9rem",
-                      cursor: "pointer",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "0.5rem",
-                    }}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={hasIllegalReroll}
-                      onChange={(e) => {
-                        setHasIllegalReroll(e.target.checked);
-                        if (e.target.checked) soundFX.playBuzzer();
-                      }}
-                      style={{ width: "18px", height: "18px" }}
-                    />
-                    Did crew request Re-Roll without playing Mini-Game?
-                  </label>
-                  <div style={{ fontSize: "0.78rem", color: "#dc2626", marginLeft: "1.6rem" }}>
-                    Triggers official penalty clause (-5 marks deduction from grand total)
-                  </div>
-                </div>
-
-                <div
-                  className="font-heading"
-                  style={{
-                    fontSize: "1.2rem",
-                    fontWeight: 900,
-                    color: hasIllegalReroll ? "#dc2626" : "#94a3b8",
-                  }}
-                >
-                  {hasIllegalReroll ? "-5 M" : "0 M"}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </section>
   );
 }
