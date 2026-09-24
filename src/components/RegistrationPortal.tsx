@@ -7,7 +7,6 @@ import { soundFX } from "@/utils/soundEffects";
 import {
   Users,
   ShieldCheck,
-  Printer,
   Sparkles,
   Trophy,
   CheckCircle2,
@@ -465,15 +464,6 @@ export default function RegistrationPortal() {
 
           {/* Action buttons */}
           <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap", justifyContent: "center" }}>
-            <button
-              onClick={() => window.print()}
-              className="btn-pirate-gold"
-              style={{ fontSize: "0.95rem" }}
-            >
-              <Printer size={18} />
-              Print / Save Wanted Poster Pass
-            </button>
-
             <a
               href="#jury"
               className="btn-pirate-crimson"
