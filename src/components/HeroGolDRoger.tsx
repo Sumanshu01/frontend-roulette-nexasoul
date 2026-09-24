@@ -284,15 +284,6 @@ export default function HeroGolDRoger() {
               }}
             >
               <a
-                href="#roulette"
-                className="btn-pirate-gold"
-                onClick={() => soundFX.playWheelTick(1.5)}
-              >
-                <Compass size={20} />
-                Spin The Dual Roulette
-              </a>
-
-              <a
                 href="#register"
                 className="btn-pirate-crimson"
                 onClick={() => soundFX.playCannon()}
@@ -302,12 +293,21 @@ export default function HeroGolDRoger() {
               </a>
 
               <a
-                href="#mini-game"
+                href="#overview"
+                className="btn-pirate-gold"
+                onClick={() => soundFX.playWheelTick(1.2)}
+              >
+                <Compass size={18} />
+                Event Logbook
+              </a>
+
+              <a
+                href="#jury"
                 className="btn-pirate-secondary"
                 onClick={() => soundFX.playCoin()}
               >
                 <Sparkles size={18} color="#fbbf24" />
-                Re-Roll Mini-Game
+                Fleet Admirals & Jury
               </a>
             </div>
           </div>

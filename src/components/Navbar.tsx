@@ -125,7 +125,7 @@ export default function Navbar() {
           className="desktop-nav"
         >
           <a
-            href="#overview"
+            href="/#overview"
             className="nav-link"
             style={{
               color: "#e2e8f0",
@@ -139,60 +139,52 @@ export default function Navbar() {
             Overview
           </a>
           <a
-            href="#roulette"
+            href="/#jury"
             className="nav-link"
             style={{
-              color: "#fef08a",
+              color: "#e2e8f0",
               fontSize: "0.9rem",
+              fontWeight: 600,
+              textDecoration: "none",
+              transition: "color 0.2s",
+            }}
+            onClick={() => soundFX.playWheelTick(1.1)}
+          >
+            Fleet & Jury
+          </a>
+          <a
+            href="/#register"
+            className="nav-link"
+            style={{
+              color: "#fbbf24",
+              fontSize: "0.9rem",
+              fontWeight: 700,
+              textDecoration: "none",
+              transition: "color 0.2s",
+            }}
+            onClick={() => soundFX.playCannon()}
+          >
+            Register
+          </a>
+          <a
+            href="/admin"
+            className="nav-link"
+            style={{
+              color: "#f87171",
+              fontSize: "0.85rem",
               fontWeight: 700,
               textDecoration: "none",
               display: "flex",
               alignItems: "center",
               gap: "0.3rem",
+              padding: "0.3rem 0.6rem",
+              borderRadius: "4px",
+              background: "rgba(185, 28, 28, 0.2)",
+              border: "1px solid rgba(248, 113, 113, 0.4)",
+              transition: "all 0.2s",
             }}
-            onClick={() => soundFX.playWheelTick(1.5)}
           >
-            <Compass size={16} color="#fbbf24" />
-            Dual Roulette
-          </a>
-          <a
-            href="#mini-game"
-            className="nav-link"
-            style={{
-              color: "#f87171",
-              fontSize: "0.9rem",
-              fontWeight: 600,
-              textDecoration: "none",
-            }}
-            onClick={() => soundFX.playWheelTick(1.3)}
-          >
-            Re-Roll Mini-Game
-          </a>
-          <a
-            href="#problems"
-            className="nav-link"
-            style={{
-              color: "#e2e8f0",
-              fontSize: "0.9rem",
-              fontWeight: 600,
-              textDecoration: "none",
-            }}
-            onClick={() => soundFX.playWheelTick(1.1)}
-          >
-            Problem Vault
-          </a>
-          <a
-            href="#prizes"
-            className="nav-link"
-            style={{
-              color: "#e2e8f0",
-              fontSize: "0.9rem",
-              fontWeight: 600,
-              textDecoration: "none",
-            }}
-            onClick={() => soundFX.playWheelTick(1.1)}
-          >
-            Bounties & Jury
+            Admin Portal
           </a>
         </nav>
 
@@ -288,7 +280,7 @@ export default function Navbar() {
           }}
         >
           <a
-            href="#overview"
+            href="/#overview"
             onClick={() => {
               setMobileMenuOpen(false);
               soundFX.playWheelTick(1.2);
@@ -298,47 +290,17 @@ export default function Navbar() {
             📜 Event Overview
           </a>
           <a
-            href="#roulette"
-            onClick={() => {
-              setMobileMenuOpen(false);
-              soundFX.playWheelTick(1.5);
-            }}
-            style={{ color: "#fef08a", textDecoration: "none", fontWeight: 700, fontSize: "1.1rem" }}
-          >
-            🎰 Dual Roulette Wheel
-          </a>
-          <a
-            href="#mini-game"
-            onClick={() => {
-              setMobileMenuOpen(false);
-              soundFX.playWheelTick(1.3);
-            }}
-            style={{ color: "#f87171", textDecoration: "none", fontWeight: 600, fontSize: "1.1rem" }}
-          >
-            🎯 Re-Roll Mini-Game
-          </a>
-          <a
-            href="#problems"
+            href="/#jury"
             onClick={() => {
               setMobileMenuOpen(false);
               soundFX.playWheelTick(1.1);
             }}
             style={{ color: "#e2e8f0", textDecoration: "none", fontWeight: 600, fontSize: "1.1rem" }}
           >
-            🗺️ Problem Vault (24+ Challenges)
+            🛡️ Fleet Admirals & Jury
           </a>
           <a
-            href="#prizes"
-            onClick={() => {
-              setMobileMenuOpen(false);
-              soundFX.playWheelTick(1.1);
-            }}
-            style={{ color: "#e2e8f0", textDecoration: "none", fontWeight: 600, fontSize: "1.1rem" }}
-          >
-            🏆 Bounties, Jury & Scoring
-          </a>
-          <a
-            href="#register"
+            href="/#register"
             onClick={() => {
               setMobileMenuOpen(false);
               soundFX.playCannon();
@@ -347,6 +309,17 @@ export default function Navbar() {
             style={{ textAlign: "center", marginTop: "0.5rem" }}
           >
             ☠️ Register Pirate Crew
+          </a>
+          <a
+            href="/admin"
+            onClick={() => {
+              setMobileMenuOpen(false);
+              soundFX.playCoin();
+            }}
+            className="btn-pirate-secondary"
+            style={{ textAlign: "center", marginTop: "0.3rem", color: "#f87171" }}
+          >
+            👑 Admin Portal
           </a>
         </div>
       )}

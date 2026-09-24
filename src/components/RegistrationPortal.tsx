@@ -18,6 +18,8 @@ import {
   Phone,
   Hash,
   Compass,
+  Loader2,
+  AlertTriangle,
 } from "lucide-react";
 
 interface CrewMember {
@@ -79,6 +81,8 @@ export default function RegistrationPortal() {
 
   // Registration state
   const [registeredCrew, setRegisteredCrew] = useState<RegisteredCrew | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const posterRef = useRef<HTMLDivElement | null>(null);
 
   // Load from localStorage on mount
@@ -93,57 +97,120 @@ export default function RegistrationPortal() {
     }
   }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSubmitError(null);
 
-    if (!crewName || !captainName || !captainEmail || !captainRoll || !m2Name || !m2Email || !m2Roll || !m3Name || !m3Email || !m3Roll) {
-      alert("Please fill in all required fields (Full Name, Email & College ID/Roll Number) for the Captain and at least 2 Crew Mates!");
+    if (
+      !crewName.trim() ||
+      !captainName.trim() ||
+      !captainEmail.trim() ||
+      !captainRoll.trim() ||
+      !captainPhone.trim() ||
+      !m2Name.trim() ||
+      !m2Email.trim() ||
+      !m2Roll.trim() ||
+      !m3Name.trim() ||
+      !m3Email.trim() ||
+      !m3Roll.trim()
+    ) {
+      setSubmitError(
+        "Please fill in all required fields (Full Name, Email, Phone & College Roll Number) for the Captain and at least 2 Crew Mates!"
+      );
       soundFX.playBuzzer();
       return;
     }
 
-    if (hasMember4 && (!m4Name || !m4Email || !m4Roll)) {
-      alert("Please complete Member 4 details (Full Name, Email & College ID/Roll Number) or uncheck the 4th member option.");
+    if (hasMember4 && (!m4Name.trim() || !m4Email.trim() || !m4Roll.trim())) {
+      setSubmitError(
+        "Please complete Member 4 details (Full Name, Email & College Roll Number) or uncheck the 4th member option."
+      );
       soundFX.playBuzzer();
       return;
     }
 
-    const randomId = "CREW-NEXA-" + Math.floor(1000 + Math.random() * 9000);
-    const bountyAmount =
-      division === "Freshers (Level 1)" ? "฿ 300,000,000" : "฿ 850,000,000";
+    setIsSubmitting(true);
 
-    const crewData: RegisteredCrew = {
-      id: randomId,
-      crewName,
-      division,
-      flag: selectedFlag,
-      captain: {
-        name: captainName,
-        email: captainEmail,
-        phone: captainPhone,
-        rollNo: captainRoll,
-        github: captainGithub,
-      },
-      member2: { name: m2Name, email: m2Email, role: m2Role, rollNo: m2Roll },
-      member3: { name: m3Name, email: m3Email, role: m3Role, rollNo: m3Roll },
-      member4: hasMember4 ? { name: m4Name, email: m4Email, role: m4Role, rollNo: m4Roll } : undefined,
-      registeredAt: new Date().toLocaleDateString(),
-      bounty: bountyAmount,
-    };
-
-    setRegisteredCrew(crewData);
     try {
-      localStorage.setItem("grand_line_registered_crew", JSON.stringify(crewData));
-    } catch {
-      // storage fallback
-    }
+      const payload = {
+        crewName: crewName.trim(),
+        division,
+        flag: selectedFlag,
+        captain: {
+          name: captainName.trim(),
+          email: captainEmail.trim(),
+          phone: captainPhone.trim(),
+          rollNo: captainRoll.trim(),
+          github: captainGithub.trim(),
+        },
+        member2: {
+          name: m2Name.trim(),
+          email: m2Email.trim(),
+          role: m2Role,
+          rollNo: m2Roll.trim(),
+        },
+        member3: {
+          name: m3Name.trim(),
+          email: m3Email.trim(),
+          role: m3Role,
+          rollNo: m3Roll.trim(),
+        },
+        member4: hasMember4
+          ? {
+              name: m4Name.trim(),
+              email: m4Email.trim(),
+              role: m4Role,
+              rollNo: m4Roll.trim(),
+            }
+          : undefined,
+      };
 
-    soundFX.playCannon();
-    confetti({
-      particleCount: 120,
-      spread: 80,
-      origin: { y: 0.6 },
-    });
+      const res = await fetch("/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const json = await res.json();
+
+      if (!res.ok) {
+        throw new Error(json.error || "Failed to register pirate crew into the database.");
+      }
+
+      const team = json.data;
+      const crewData: RegisteredCrew = {
+        id: team.teamId,
+        crewName: team.teamName,
+        division: team.division,
+        flag: team.flag,
+        captain: team.captain,
+        member2: team.member2,
+        member3: team.member3,
+        member4: team.member4,
+        registeredAt: new Date(team.registeredAt || team.createdAt).toLocaleDateString(),
+        bounty: team.bounty,
+      };
+
+      setRegisteredCrew(crewData);
+      try {
+        localStorage.setItem("grand_line_registered_crew", JSON.stringify(crewData));
+      } catch {
+        // storage fallback
+      }
+
+      soundFX.playCannon();
+      confetti({
+        particleCount: 140,
+        spread: 85,
+        origin: { y: 0.6 },
+      });
+    } catch (err: unknown) {
+      soundFX.playBuzzer();
+      const message = err instanceof Error ? err.message : "Registration failed. Please try again.";
+      setSubmitError(message);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleResetRegistration = () => {
@@ -408,13 +475,13 @@ export default function RegistrationPortal() {
             </button>
 
             <a
-              href="#roulette"
+              href="#jury"
               className="btn-pirate-crimson"
               style={{ fontSize: "0.95rem", textAlign: "center" }}
               onClick={() => soundFX.playWheelTick(1.4)}
             >
-              <Compass size={18} />
-              Proceed to Dual Roulette
+              <Trophy size={18} />
+              Meet Fleet Admirals & Jury
             </a>
 
             <button
@@ -439,6 +506,31 @@ export default function RegistrationPortal() {
           }}
         >
           <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1.8rem" }}>
+            {/* Error Banner */}
+            {submitError && (
+              <div
+                style={{
+                  background: "rgba(185, 28, 28, 0.15)",
+                  border: "2px solid #b91c1c",
+                  borderRadius: "8px",
+                  padding: "1rem 1.2rem",
+                  display: "flex",
+                  alignItems: "flex-start",
+                  gap: "0.8rem",
+                  color: "#7f1d1d",
+                }}
+              >
+                <AlertTriangle size={22} color="#b91c1c" style={{ flexShrink: 0, marginTop: "2px" }} />
+                <div>
+                  <div style={{ fontWeight: 800, fontSize: "0.95rem", marginBottom: "0.2rem" }}>
+                    Registration Warning
+                  </div>
+                  <div style={{ fontSize: "0.9rem", lineHeight: 1.5 }}>
+                    {submitError}
+                  </div>
+                </div>
+              </div>
+            )}
             {/* Step 1: Fleet & Ship Identity */}
             <div>
               <h3
@@ -953,15 +1045,29 @@ export default function RegistrationPortal() {
             <div style={{ textAlign: "center", marginTop: "1rem" }}>
               <button
                 type="submit"
+                disabled={isSubmitting}
                 className="btn-pirate-crimson"
                 style={{
                   fontSize: "1.15rem",
                   padding: "1rem 2.8rem",
                   letterSpacing: "1px",
                   boxShadow: "0 10px 25px rgba(185, 28, 28, 0.5)",
+                  opacity: isSubmitting ? 0.75 : 1,
+                  cursor: isSubmitting ? "not-allowed" : "pointer",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "0.6rem",
                 }}
               >
-                ENLIST CREW & GENERATE WANTED PASS
+                {isSubmitting ? (
+                  <>
+                    <Loader2 size={20} className="animate-spin" />
+                    INSCRIBING INTO GRAND LINE LEDGER (MONGODB)...
+                  </>
+                ) : (
+                  "ENLIST CREW & GENERATE WANTED PASS"
+                )}
               </button>
             </div>
           </form>
