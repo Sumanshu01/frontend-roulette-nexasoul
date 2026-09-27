@@ -200,24 +200,10 @@ export const EVENT_DATA = {
       round: "2nd Round Jury",
       badgeColor: "#0284c7"
     },
-    {
-      name: "Senior Guest Jury 1",
-      role: "First Fleet Inspector",
-      round: "1st Round Jury",
-      badgeColor: "#16a34a"
-    },
-    {
-      name: "Senior Guest Jury 2",
-      role: "Second Fleet Inspector",
-      round: "2nd Round Jury",
-      badgeColor: "#16a34a"
-    }
   ],
 
   mentors: [
     { name: "Nitin Patel", title: "Chief Navigation Officer" },
-    { name: "Garvit Amit Bhutani", title: "Grand Line Tech Strategist" },
-    { name: "Suraj", title: "Full Stack Helmsman" },
     { name: "Darshna Parihar", title: "UI/UX Quartermaster" }
   ],
 
