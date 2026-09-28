@@ -22,9 +22,26 @@ export async function PATCH(
 
     await connectToDatabase();
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const updateFields: Record<string, any> = {};
+    if (body.status !== undefined) updateFields.status = body.status;
+    if (body.hasSpunRoulette !== undefined) updateFields.hasSpunRoulette = body.hasSpunRoulette;
+    if (body.assignedProblemTitle !== undefined) updateFields.assignedProblemTitle = body.assignedProblemTitle;
+    if (body.assignedProblemId !== undefined) updateFields.assignedProblemId = body.assignedProblemId;
+    if (body.assignedProblemNumber !== undefined) updateFields.assignedProblemNumber = body.assignedProblemNumber;
+    if (body.assignedAt !== undefined) updateFields.assignedAt = body.assignedAt;
+
+    if (body.resetSpin === true) {
+      updateFields.hasSpunRoulette = false;
+      updateFields.assignedProblemTitle = null;
+      updateFields.assignedProblemId = null;
+      updateFields.assignedProblemNumber = null;
+      updateFields.assignedAt = null;
+    }
+
     const updated = await TeamModel.findByIdAndUpdate(
       id,
-      { status: body.status },
+      updateFields,
       { new: true }
     );
 

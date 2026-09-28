@@ -26,6 +26,11 @@ export interface IRegisteredTeam extends Document {
   member4?: ICrewMember;
   bounty: string;
   status: "Registered" | "Checked-In";
+  assignedProblemTitle?: string;
+  assignedProblemId?: string;
+  assignedProblemNumber?: number;
+  hasSpunRoulette?: boolean;
+  assignedAt?: Date;
   registeredAt: Date;
   createdAt: Date;
   updatedAt: Date;
@@ -86,6 +91,26 @@ const TeamSchema = new Schema<IRegisteredTeam>(
       type: String,
       enum: ["Registered", "Checked-In"],
       default: "Registered",
+    },
+    assignedProblemTitle: {
+      type: String,
+      default: null,
+    },
+    assignedProblemId: {
+      type: String,
+      default: null,
+    },
+    assignedProblemNumber: {
+      type: Number,
+      default: null,
+    },
+    hasSpunRoulette: {
+      type: Boolean,
+      default: false,
+    },
+    assignedAt: {
+      type: Date,
+      default: null,
     },
     registeredAt: {
       type: Date,

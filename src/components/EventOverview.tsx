@@ -490,7 +490,7 @@ export default function EventOverview() {
                 marginBottom: "0.5rem",
               }}
             >
-              VENUE: D4 / D7 OPEN AREA
+              VENUE: B4 UCRD
             </h3>
 
             <p style={{ color: "#cbd5e1", fontSize: "1.05rem", lineHeight: "1.7", marginBottom: "1.5rem" }}>

@@ -197,6 +197,28 @@ export default function Navbar() {
             Register
           </a>
           <a
+            href="/#roulette"
+            className="nav-link"
+            style={{
+              color: "#fbbf24",
+              fontSize: "0.85rem",
+              fontWeight: 800,
+              textDecoration: "none",
+              display: "flex",
+              alignItems: "center",
+              gap: "0.35rem",
+              padding: "0.3rem 0.8rem",
+              borderRadius: "4px",
+              background: "rgba(245, 158, 11, 0.18)",
+              border: "1px solid rgba(245, 158, 11, 0.5)",
+              transition: "all 0.2s",
+              boxShadow: "0 0 10px rgba(245,158,11,0.2)",
+            }}
+            onClick={() => soundFX.playWheelTick(1.2)}
+          >
+            🎡 Roulette
+          </a>
+          <a
             href="/admin"
             className="nav-link"
             style={{

@@ -21,6 +21,7 @@ export async function GET(req: NextRequest) {
     const q = searchParams.get("q")?.trim() || "";
     const division = searchParams.get("division");
     const status = searchParams.get("status");
+    const roulette = searchParams.get("roulette");
 
     // Build filter
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -34,11 +35,19 @@ export async function GET(req: NextRequest) {
       filter.status = status;
     }
 
+    if (roulette === "Spun") {
+      filter.hasSpunRoulette = true;
+    } else if (roulette === "Pending") {
+      filter.hasSpunRoulette = { $ne: true };
+    }
+
     if (q) {
       const regex = new RegExp(q, "i");
       filter.$or = [
         { teamName: regex },
         { teamId: regex },
+        { assignedProblemTitle: regex },
+        { assignedProblemId: regex },
         { "captain.name": regex },
         { "captain.email": regex },
         { "captain.rollNo": regex },
@@ -57,6 +66,8 @@ export async function GET(req: NextRequest) {
     let freshersCount = 0;
     let seniorsCount = 0;
     let checkedInCount = 0;
+    let spunCount = 0;
+    let pendingSpinCount = 0;
 
     for (const team of allTeams) {
       // 1 captain + member2 + member3 + (optional member4)
@@ -72,6 +83,12 @@ export async function GET(req: NextRequest) {
       if (team.status === "Checked-In") {
         checkedInCount++;
       }
+
+      if (team.hasSpunRoulette) {
+        spunCount++;
+      } else {
+        pendingSpinCount++;
+      }
     }
 
     return NextResponse.json({
@@ -82,6 +99,8 @@ export async function GET(req: NextRequest) {
         freshersCount,
         seniorsCount,
         checkedInCount,
+        spunCount,
+        pendingSpinCount,
       },
       data: teams,
     });

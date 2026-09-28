@@ -55,6 +55,12 @@ interface ITeam {
   status: "Registered" | "Checked-In";
   registeredAt: string;
   createdAt: string;
+  // Roulette Assignment
+  hasSpunRoulette?: boolean;
+  assignedProblemTitle?: string | null;
+  assignedProblemId?: string | null;
+  assignedProblemNumber?: number | null;
+  assignedAt?: string | null;
 }
 
 interface IStats {
@@ -63,6 +69,8 @@ interface IStats {
   freshersCount: number;
   seniorsCount: number;
   checkedInCount: number;
+  spunCount?: number;
+  pendingSpinCount?: number;
 }
 
 export default function AdminPortal() {
@@ -86,6 +94,7 @@ export default function AdminPortal() {
   const [searchQuery, setSearchQuery] = useState("");
   const [divisionFilter, setDivisionFilter] = useState("All");
   const [statusFilter, setStatusFilter] = useState("All");
+  const [rouletteFilter, setRouletteFilter] = useState("All");
 
   // Selected team for dossier modal
   const [selectedTeam, setSelectedTeam] = useState<ITeam | null>(null);
@@ -111,6 +120,7 @@ export default function AdminPortal() {
       if (searchQuery) params.set("q", searchQuery);
       if (divisionFilter !== "All") params.set("division", divisionFilter);
       if (statusFilter !== "All") params.set("status", statusFilter);
+      if (rouletteFilter !== "All") params.set("roulette", rouletteFilter);
 
       const res = await fetch(`/api/teams?${params.toString()}`, {
         headers: {
@@ -145,7 +155,7 @@ export default function AdminPortal() {
     } finally {
       setLoading(false);
     }
-  }, [passcode, searchQuery, divisionFilter, statusFilter]);
+  }, [passcode, searchQuery, divisionFilter, statusFilter, rouletteFilter]);
 
   // Fetch when authenticated and filters change
   useEffect(() => {
@@ -690,6 +700,48 @@ export default function AdminPortal() {
                   Gate Attendance Verified
                 </div>
               </div>
+
+              <div
+                className="pirate-panel"
+                style={{
+                  padding: "1.4rem",
+                  borderLeft: "4px solid #f59e0b",
+                }}
+              >
+                <div style={{ fontSize: "0.75rem", color: "#94a3b8", fontWeight: 700 }}>
+                  ROULETTE SPUN 🎡
+                </div>
+                <div
+                  className="font-heading"
+                  style={{ fontSize: "2.2rem", fontWeight: 900, color: "#fbbf24", marginTop: "0.3rem" }}
+                >
+                  {stats.spunCount ?? 0}
+                </div>
+                <div style={{ fontSize: "0.72rem", color: "#fbbf24", marginTop: "0.2rem" }}>
+                  Problems Assigned
+                </div>
+              </div>
+
+              <div
+                className="pirate-panel"
+                style={{
+                  padding: "1.4rem",
+                  borderLeft: "4px solid #ef4444",
+                }}
+              >
+                <div style={{ fontSize: "0.75rem", color: "#94a3b8", fontWeight: 700 }}>
+                  ROULETTE PENDING ⏳
+                </div>
+                <div
+                  className="font-heading"
+                  style={{ fontSize: "2.2rem", fontWeight: 900, color: "#f87171", marginTop: "0.3rem" }}
+                >
+                  {stats.pendingSpinCount ?? 0}
+                </div>
+                <div style={{ fontSize: "0.72rem", color: "#f87171", marginTop: "0.2rem" }}>
+                  Awaiting Spin
+                </div>
+              </div>
             </div>
 
             {/* Filter & Search Bar */}
@@ -795,6 +847,31 @@ export default function AdminPortal() {
                   <option value="Checked-In">Checked-In</option>
                 </select>
               </div>
+
+              {/* Roulette Filter */}
+              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                <span style={{ fontSize: "0.82rem", color: "#94a3b8", fontWeight: 700 }}>
+                  Roulette:
+                </span>
+                <select
+                  value={rouletteFilter}
+                  onChange={(e) => setRouletteFilter(e.target.value)}
+                  style={{
+                    background: "rgba(17, 30, 56, 0.9)",
+                    border: "1px solid rgba(245, 158, 11, 0.3)",
+                    color: "#fef08a",
+                    padding: "0.5rem 0.8rem",
+                    borderRadius: "6px",
+                    fontSize: "0.85rem",
+                    cursor: "pointer",
+                    outline: "none",
+                  }}
+                >
+                  <option value="All">All Teams</option>
+                  <option value="Spun">🎡 Spun (Assigned)</option>
+                  <option value="Pending">⏳ Pending Spin</option>
+                </select>
+              </div>
             </div>
 
             {/* Error Message */}
@@ -854,6 +931,7 @@ export default function AdminPortal() {
                       <th style={{ padding: "1rem" }}>Captain Details</th>
                       <th style={{ padding: "1rem", textAlign: "center" }}>Crew Size</th>
                       <th style={{ padding: "1rem" }}>Gate Status</th>
+                      <th style={{ padding: "1rem", minWidth: "220px" }}>🎡 Assigned Problem</th>
                       <th style={{ padding: "1rem" }}>Registered</th>
                       <th style={{ padding: "1rem", textAlign: "center" }}>Actions</th>
                     </tr>
@@ -1013,6 +1091,59 @@ export default function AdminPortal() {
                               </button>
                             </td>
 
+                            {/* Assigned Problem */}
+                            <td style={{ padding: "0.9rem 1rem", maxWidth: "260px" }}>
+                              {team.hasSpunRoulette && team.assignedProblemTitle ? (
+                                <div>
+                                  <div
+                                    style={{
+                                      display: "inline-flex",
+                                      alignItems: "center",
+                                      gap: "0.3rem",
+                                      background: "rgba(34, 197, 94, 0.15)",
+                                      border: "1px solid #22c55e",
+                                      color: "#4ade80",
+                                      fontSize: "0.7rem",
+                                      fontWeight: 800,
+                                      padding: "0.15rem 0.5rem",
+                                      borderRadius: "999px",
+                                      marginBottom: "0.3rem",
+                                    }}
+                                  >
+                                    <CheckCircle2 size={11} />
+                                    SPUN
+                                  </div>
+                                  <div style={{ fontSize: "0.8rem", color: "#f8fafc", fontWeight: 700, lineHeight: 1.3 }}>
+                                    <span style={{ color: "#fbbf24", fontWeight: 900 }}>{team.assignedProblemId}</span>{" "}
+                                    {team.assignedProblemTitle}
+                                  </div>
+                                  {team.assignedAt && (
+                                    <div style={{ fontSize: "0.7rem", color: "#64748b", marginTop: "0.2rem" }}>
+                                      {new Date(team.assignedAt).toLocaleString()}
+                                    </div>
+                                  )}
+                                </div>
+                              ) : (
+                                <span
+                                  style={{
+                                    display: "inline-flex",
+                                    alignItems: "center",
+                                    gap: "0.3rem",
+                                    background: "rgba(245, 158, 11, 0.1)",
+                                    border: "1px solid rgba(245, 158, 11, 0.3)",
+                                    color: "#fbbf24",
+                                    fontSize: "0.72rem",
+                                    fontWeight: 700,
+                                    padding: "0.2rem 0.6rem",
+                                    borderRadius: "999px",
+                                  }}
+                                >
+                                  <Clock size={11} />
+                                  Pending Spin
+                                </span>
+                              )}
+                            </td>
+
                             {/* Registered Date */}
                             <td style={{ padding: "0.9rem 1rem", color: "#94a3b8", fontSize: "0.78rem" }}>
                               {new Date(team.registeredAt || team.createdAt).toLocaleDateString()}
@@ -1134,6 +1265,52 @@ export default function AdminPortal() {
                       <span style={{ color: "#cbd5e1" }}>{selectedTeam.division}</span>
                       <span>•</span>
                       <span>{selectedTeam.flag}</span>
+                    </div>
+
+                    {/* Roulette Assignment Badge in Modal Header */}
+                    <div style={{ marginTop: "0.8rem" }}>
+                      {selectedTeam.hasSpunRoulette && selectedTeam.assignedProblemTitle ? (
+                        <div
+                          style={{
+                            background: "rgba(34, 197, 94, 0.12)",
+                            border: "1.5px solid #22c55e",
+                            borderRadius: "8px",
+                            padding: "0.8rem 1rem",
+                          }}
+                        >
+                          <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", color: "#4ade80", fontSize: "0.75rem", fontWeight: 800, marginBottom: "0.3rem" }}>
+                            <CheckCircle2 size={14} color="#22c55e" />
+                            ROULETTE ASSIGNED PROBLEM
+                          </div>
+                          <div style={{ fontWeight: 800, color: "#ffffff", fontSize: "1rem", lineHeight: 1.3 }}>
+                            <span style={{ color: "#fbbf24" }}>{selectedTeam.assignedProblemId}</span>{" "}
+                            {selectedTeam.assignedProblemTitle}
+                          </div>
+                          {selectedTeam.assignedAt && (
+                            <div style={{ fontSize: "0.75rem", color: "#86efac", marginTop: "0.2rem" }}>
+                              Spun on: {new Date(selectedTeam.assignedAt).toLocaleString()}
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        <div
+                          style={{
+                            background: "rgba(245, 158, 11, 0.1)",
+                            border: "1px dashed rgba(245, 158, 11, 0.4)",
+                            borderRadius: "6px",
+                            padding: "0.6rem 1rem",
+                            color: "#fbbf24",
+                            fontSize: "0.82rem",
+                            fontWeight: 700,
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "0.4rem",
+                          }}
+                        >
+                          <Clock size={14} />
+                          Roulette not yet spun — Problem pending assignment
+                        </div>
+                      )}
                     </div>
                   </div>
 
