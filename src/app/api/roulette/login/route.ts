@@ -60,6 +60,11 @@ export async function POST(req: NextRequest) {
         assignedProblemId: team.assignedProblemId || null,
         assignedProblemNumber: team.assignedProblemNumber || null,
         assignedAt: team.assignedAt || null,
+        hasSpunMechanic: !!team.hasSpunMechanic,
+        assignedMechanicType: team.assignedMechanicType || null,
+        assignedMechanicName: team.assignedMechanicName || null,
+        assignedMechanicDetails: team.assignedMechanicDetails || null,
+        mechanicAssignedAt: team.mechanicAssignedAt || null,
       },
     });
   } catch (error: unknown) {

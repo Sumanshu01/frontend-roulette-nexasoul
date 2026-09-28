@@ -22,7 +22,9 @@ import {
   Lightbulb,
   ExternalLink,
   Tag,
+  Zap,
 } from "lucide-react";
+import { DEVIL_FRUIT_POWERS, HAKI_POWERS } from "@/data/mechanics";
 
 export default function ProblemVault() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -30,7 +32,7 @@ export default function ProblemVault() {
   const [selectedDomain, setSelectedDomain] = useState("All");
   const [activeModalProblem, setActiveModalProblem] = useState<ProblemStatement | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
-  const [modalTab, setModalTab] = useState<"statement" | "requirements" | "solution" | "theme">("statement");
+  const [modalTab, setModalTab] = useState<"statement" | "requirements" | "solution" | "theme" | "mechanics">("statement");
 
   // Extract all unique domains
   const domains = useMemo(() => {
@@ -173,6 +175,43 @@ ${prob.themeIntegration}
           <strong style={{ color: "#fbbf24" }}>unique number (Problems #01 through #10 / PS-01 through PS-10)</strong>{" "}
           and must be integrated with the <strong style={{ color: "#f87171" }}>One Piece</strong> theme.
         </p>
+
+        {/* Devil Fruit + Haki Mechanics Callout Banner */}
+        <div
+          style={{
+            marginTop: "1.2rem",
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "0.8rem",
+            background: "linear-gradient(135deg, rgba(88, 28, 135, 0.3) 0%, rgba(2, 132, 199, 0.3) 100%)",
+            border: "1px solid rgba(192, 132, 252, 0.4)",
+            padding: "0.6rem 1.4rem",
+            borderRadius: "999px",
+            fontSize: "0.9rem",
+            color: "#e2e8f0",
+            flexWrap: "wrap",
+            justifyContent: "center",
+          }}
+        >
+          <span style={{ display: "inline-flex", alignItems: "center", gap: "0.4rem", color: "#fef08a", fontWeight: 800 }}>
+            <Zap size={16} color="#fbbf24" />
+            <span>Problem Modifier Protocol:</span>
+          </span>
+          <span>Each crew also awakens a <strong>Devil Fruit or Haki Power</strong> via Dual Roulette!</span>
+          <a
+            href="#mechanics"
+            style={{
+              color: "#fbbf24",
+              fontWeight: 800,
+              textDecoration: "underline",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "0.2rem",
+            }}
+          >
+            <span>Spin Dual Roulettes</span> →
+          </a>
+        </div>
       </div>
 
       {/* Quick Number Selector Bar */}
@@ -862,6 +901,7 @@ ${prob.themeIntegration}
                 { id: "requirements", label: `Requirements (${activeModalProblem.requirements.length})`, icon: CheckCircle2 },
                 { id: "solution", label: "Proposed Solution", icon: Lightbulb },
                 { id: "theme", label: "One Piece Theme Note", icon: Ship },
+                { id: "mechanics", label: "⚡ Devil Fruit + Haki", icon: Zap },
               ].map((tab) => {
                 const Icon = tab.icon;
                 const isActive = modalTab === tab.id;
@@ -1207,6 +1247,127 @@ ${prob.themeIntegration}
                         &ldquo;{activeModalProblem.onePieceFlavor.loreHook}&rdquo;
                       </p>
                     </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Tab 5: Devil Fruit + Haki Mechanics */}
+            {modalTab === "mechanics" && (
+              <div>
+                <div
+                  style={{
+                    background: "linear-gradient(135deg, rgba(88, 28, 135, 0.15) 0%, rgba(2, 132, 199, 0.15) 100%)",
+                    border: "2px solid #b45309",
+                    borderRadius: "8px",
+                    padding: "1.4rem",
+                    marginBottom: "1.4rem",
+                  }}
+                >
+                  <div
+                    style={{
+                      fontSize: "0.8rem",
+                      fontWeight: 800,
+                      color: "#78350f",
+                      letterSpacing: "1.5px",
+                      textTransform: "uppercase",
+                      marginBottom: "0.4rem",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.4rem",
+                    }}
+                  >
+                    <Zap size={16} color="#fbbf24" />
+                    CHALLENGE MODIFIER INTEGRATION
+                  </div>
+                  <p style={{ color: "#27150a", fontSize: "1rem", lineHeight: 1.6, margin: "0.2rem 0 0.8rem" }}>
+                    While your team implements <strong>{activeModalProblem.title} (Problem #{activeModalProblem.number})</strong>,
+                    your evaluation will be modified by your team&apos;s awakened <strong>Devil Fruit or Haki Power</strong> obtained through the Dual Roulette!
+                  </p>
+                  <a
+                    href="#mechanics"
+                    onClick={() => setActiveModalProblem(null)}
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "0.4rem",
+                      background: "#991b1b",
+                      color: "#fef08a",
+                      padding: "0.4rem 1rem",
+                      borderRadius: "6px",
+                      fontSize: "0.85rem",
+                      fontWeight: 800,
+                      textDecoration: "none",
+                      border: "1px solid #fbbf24",
+                    }}
+                  >
+                    <span>Spin Crew&apos;s Dual Roulette</span> →
+                  </a>
+                </div>
+
+                {/* The 4 Devil Fruit Powers */}
+                <div style={{ marginBottom: "1.5rem" }}>
+                  <h4 style={{ fontSize: "1rem", fontWeight: 800, color: "#7e22ce", marginBottom: "0.6rem", display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                    <span>☠️</span> 4 Common Devil Fruit Powers
+                  </h4>
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "0.8rem" }}>
+                    {DEVIL_FRUIT_POWERS.map((df) => (
+                      <div
+                        key={df.id}
+                        style={{
+                          background: "#ffffff",
+                          border: "1px solid rgba(147, 51, 234, 0.3)",
+                          borderRadius: "6px",
+                          padding: "0.85rem",
+                        }}
+                      >
+                        <strong style={{ color: "#78350f", fontSize: "0.95rem" }}>
+                          {df.icon} {df.name}
+                        </strong>
+                        <div style={{ fontSize: "0.8rem", color: "#475569", marginTop: "0.3rem" }}>
+                          <strong>Effect:</strong> {df.commonEffect}
+                        </div>
+                        <div style={{ fontSize: "0.8rem", color: "#16a34a", marginTop: "0.2rem" }}>
+                          <strong>Benefit:</strong> {df.benefit}
+                        </div>
+                        <div style={{ fontSize: "0.8rem", color: "#dc2626", marginTop: "0.2rem" }}>
+                          <strong>Disadvantage:</strong> {df.disadvantage}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* The 4 Haki Powers */}
+                <div>
+                  <h4 style={{ fontSize: "1rem", fontWeight: 800, color: "#0284c7", marginBottom: "0.6rem", display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                    <span>⚡</span> 4 Common Haki Powers
+                  </h4>
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "0.8rem" }}>
+                    {HAKI_POWERS.map((haki) => (
+                      <div
+                        key={haki.id}
+                        style={{
+                          background: "#ffffff",
+                          border: "1px solid rgba(2, 132, 199, 0.3)",
+                          borderRadius: "6px",
+                          padding: "0.85rem",
+                        }}
+                      >
+                        <strong style={{ color: "#78350f", fontSize: "0.95rem" }}>
+                          {haki.icon} {haki.name}
+                        </strong>
+                        <div style={{ fontSize: "0.8rem", color: "#475569", marginTop: "0.3rem" }}>
+                          <strong>Challenge:</strong> {haki.challenge}
+                        </div>
+                        <div style={{ fontSize: "0.8rem", color: "#ca8a04", marginTop: "0.2rem" }}>
+                          <strong>Pass Condition:</strong> {haki.passCondition}
+                        </div>
+                        <div style={{ fontSize: "0.8rem", color: "#0284c7", marginTop: "0.2rem" }}>
+                          <strong>Awarded Power:</strong> {haki.power}
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>

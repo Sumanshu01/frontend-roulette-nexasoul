@@ -22,6 +22,7 @@ export async function GET(req: NextRequest) {
     const division = searchParams.get("division");
     const status = searchParams.get("status");
     const roulette = searchParams.get("roulette");
+    const mechanic = searchParams.get("mechanic");
 
     // Build filter
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -41,6 +42,16 @@ export async function GET(req: NextRequest) {
       filter.hasSpunRoulette = { $ne: true };
     }
 
+    if (mechanic === "Devil Fruit") {
+      filter.assignedMechanicType = "Devil Fruit";
+    } else if (mechanic === "Haki") {
+      filter.assignedMechanicType = "Haki";
+    } else if (mechanic === "Spun") {
+      filter.hasSpunMechanic = true;
+    } else if (mechanic === "Pending") {
+      filter.hasSpunMechanic = { $ne: true };
+    }
+
     if (q) {
       const regex = new RegExp(q, "i");
       filter.$or = [
@@ -48,6 +59,8 @@ export async function GET(req: NextRequest) {
         { teamId: regex },
         { assignedProblemTitle: regex },
         { assignedProblemId: regex },
+        { assignedMechanicName: regex },
+        { assignedMechanicType: regex },
         { "captain.name": regex },
         { "captain.email": regex },
         { "captain.rollNo": regex },
@@ -68,6 +81,9 @@ export async function GET(req: NextRequest) {
     let checkedInCount = 0;
     let spunCount = 0;
     let pendingSpinCount = 0;
+    let spunMechanicCount = 0;
+    let devilFruitCount = 0;
+    let hakiCount = 0;
 
     for (const team of allTeams) {
       // 1 captain + member2 + member3 + (optional member4)
@@ -89,6 +105,15 @@ export async function GET(req: NextRequest) {
       } else {
         pendingSpinCount++;
       }
+
+      if (team.hasSpunMechanic) {
+        spunMechanicCount++;
+        if (team.assignedMechanicType === "Devil Fruit") {
+          devilFruitCount++;
+        } else if (team.assignedMechanicType === "Haki") {
+          hakiCount++;
+        }
+      }
     }
 
     return NextResponse.json({
@@ -101,6 +126,9 @@ export async function GET(req: NextRequest) {
         checkedInCount,
         spunCount,
         pendingSpinCount,
+        spunMechanicCount,
+        devilFruitCount,
+        hakiCount,
       },
       data: teams,
     });

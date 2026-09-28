@@ -40,6 +40,22 @@ export interface IRegisteredTeam extends Document {
   assignedProblemNumber?: number;
   hasSpunRoulette?: boolean;
   assignedAt?: Date;
+  hasSpunMechanic?: boolean;
+  assignedMechanicType?: "Devil Fruit" | "Haki";
+  assignedMechanicName?: string;
+  assignedMechanicDetails?: {
+    type: "Devil Fruit" | "Haki";
+    name: string;
+    icon?: string;
+    commonEffect?: string;
+    benefit?: string;
+    disadvantage?: string;
+    challenge?: string;
+    passCondition?: string;
+    power?: string;
+    lore?: string;
+  };
+  mechanicAssignedAt?: Date;
   memberAttendance?: IMemberAttendance;
   registeredAt: Date;
   createdAt: Date;
@@ -119,6 +135,26 @@ const TeamSchema = new Schema<IRegisteredTeam>(
       default: false,
     },
     assignedAt: {
+      type: Date,
+      default: null,
+    },
+    hasSpunMechanic: {
+      type: Boolean,
+      default: false,
+    },
+    assignedMechanicType: {
+      type: String,
+      default: null,
+    },
+    assignedMechanicName: {
+      type: String,
+      default: null,
+    },
+    assignedMechanicDetails: {
+      type: Schema.Types.Mixed,
+      default: null,
+    },
+    mechanicAssignedAt: {
       type: Date,
       default: null,
     },

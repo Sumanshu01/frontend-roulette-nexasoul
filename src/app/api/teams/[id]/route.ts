@@ -30,6 +30,11 @@ export async function PATCH(
     if (body.assignedProblemId !== undefined) updateFields.assignedProblemId = body.assignedProblemId;
     if (body.assignedProblemNumber !== undefined) updateFields.assignedProblemNumber = body.assignedProblemNumber;
     if (body.assignedAt !== undefined) updateFields.assignedAt = body.assignedAt;
+    if (body.hasSpunMechanic !== undefined) updateFields.hasSpunMechanic = body.hasSpunMechanic;
+    if (body.assignedMechanicType !== undefined) updateFields.assignedMechanicType = body.assignedMechanicType;
+    if (body.assignedMechanicName !== undefined) updateFields.assignedMechanicName = body.assignedMechanicName;
+    if (body.assignedMechanicDetails !== undefined) updateFields.assignedMechanicDetails = body.assignedMechanicDetails;
+    if (body.mechanicAssignedAt !== undefined) updateFields.mechanicAssignedAt = body.mechanicAssignedAt;
 
     if (body.resetSpin === true) {
       updateFields.hasSpunRoulette = false;
@@ -37,6 +42,14 @@ export async function PATCH(
       updateFields.assignedProblemId = null;
       updateFields.assignedProblemNumber = null;
       updateFields.assignedAt = null;
+    }
+
+    if (body.resetMechanicSpin === true) {
+      updateFields.hasSpunMechanic = false;
+      updateFields.assignedMechanicType = null;
+      updateFields.assignedMechanicName = null;
+      updateFields.assignedMechanicDetails = null;
+      updateFields.mechanicAssignedAt = null;
     }
 
     const updated = await TeamModel.findByIdAndUpdate(

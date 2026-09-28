@@ -55,12 +55,19 @@ interface ITeam {
   status: "Registered" | "Checked-In";
   registeredAt: string;
   createdAt: string;
-  // Roulette Assignment
+  // Roulette Problem Assignment
   hasSpunRoulette?: boolean;
   assignedProblemTitle?: string | null;
   assignedProblemId?: string | null;
   assignedProblemNumber?: number | null;
   assignedAt?: string | null;
+  // Devil Fruit & Haki Mechanics Assignment
+  hasSpunMechanic?: boolean;
+  assignedMechanicType?: "Devil Fruit" | "Haki" | null;
+  assignedMechanicName?: string | null;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  assignedMechanicDetails?: any;
+  mechanicAssignedAt?: string | null;
 }
 
 interface IStats {
@@ -71,6 +78,9 @@ interface IStats {
   checkedInCount: number;
   spunCount?: number;
   pendingSpinCount?: number;
+  spunMechanicCount?: number;
+  devilFruitCount?: number;
+  hakiCount?: number;
 }
 
 export default function AdminPortal() {
@@ -95,6 +105,7 @@ export default function AdminPortal() {
   const [divisionFilter, setDivisionFilter] = useState("All");
   const [statusFilter, setStatusFilter] = useState("All");
   const [rouletteFilter, setRouletteFilter] = useState("All");
+  const [mechanicFilter, setMechanicFilter] = useState("All");
 
   // Selected team for dossier modal
   const [selectedTeam, setSelectedTeam] = useState<ITeam | null>(null);
@@ -121,6 +132,7 @@ export default function AdminPortal() {
       if (divisionFilter !== "All") params.set("division", divisionFilter);
       if (statusFilter !== "All") params.set("status", statusFilter);
       if (rouletteFilter !== "All") params.set("roulette", rouletteFilter);
+      if (mechanicFilter !== "All") params.set("mechanic", mechanicFilter);
 
       const res = await fetch(`/api/teams?${params.toString()}`, {
         headers: {
@@ -155,7 +167,7 @@ export default function AdminPortal() {
     } finally {
       setLoading(false);
     }
-  }, [passcode, searchQuery, divisionFilter, statusFilter, rouletteFilter]);
+  }, [passcode, searchQuery, divisionFilter, statusFilter, rouletteFilter, mechanicFilter]);
 
   // Fetch when authenticated and filters change
   useEffect(() => {
@@ -262,6 +274,112 @@ export default function AdminPortal() {
     }
   };
 
+  const handleResetProblemSpin = async (team: ITeam) => {
+    if (
+      !confirm(
+        `Reset Problem assignment for "${team.teamName}"? This will allow them to re-spin the problem roulette.`
+      )
+    ) {
+      return;
+    }
+
+    try {
+      const res = await fetch(`/api/teams/${team._id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          "x-admin-key": passcode,
+        },
+        body: JSON.stringify({ resetSpin: true }),
+      });
+
+      if (!res.ok) throw new Error("Failed to reset spin");
+
+      setTeams((prev) =>
+        prev.map((t) =>
+          t._id === team._id
+            ? {
+                ...t,
+                hasSpunRoulette: false,
+                assignedProblemTitle: null,
+                assignedProblemId: null,
+                assignedProblemNumber: null,
+                assignedAt: null,
+              }
+            : t
+        )
+      );
+
+      if (selectedTeam && selectedTeam._id === team._id) {
+        setSelectedTeam({
+          ...selectedTeam,
+          hasSpunRoulette: false,
+          assignedProblemTitle: null,
+          assignedProblemId: null,
+          assignedProblemNumber: null,
+          assignedAt: null,
+        });
+      }
+
+      soundFX.playCoin();
+    } catch {
+      alert("Failed to reset problem spin.");
+    }
+  };
+
+  const handleResetMechanicSpin = async (team: ITeam) => {
+    if (
+      !confirm(
+        `Reset Awakened Power for "${team.teamName}"? This will allow them to re-spin the Devil Fruit & Haki Dual Roulette.`
+      )
+    ) {
+      return;
+    }
+
+    try {
+      const res = await fetch(`/api/teams/${team._id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          "x-admin-key": passcode,
+        },
+        body: JSON.stringify({ resetMechanicSpin: true }),
+      });
+
+      if (!res.ok) throw new Error("Failed to reset power");
+
+      setTeams((prev) =>
+        prev.map((t) =>
+          t._id === team._id
+            ? {
+                ...t,
+                hasSpunMechanic: false,
+                assignedMechanicType: null,
+                assignedMechanicName: null,
+                assignedMechanicDetails: null,
+                mechanicAssignedAt: null,
+              }
+            : t
+        )
+      );
+
+      if (selectedTeam && selectedTeam._id === team._id) {
+        setSelectedTeam({
+          ...selectedTeam,
+          hasSpunMechanic: false,
+          assignedMechanicType: null,
+          assignedMechanicName: null,
+          assignedMechanicDetails: null,
+          mechanicAssignedAt: null,
+        });
+      }
+
+      soundFX.playCoin();
+    } catch {
+      alert("Failed to reset mechanic spin.");
+    }
+  };
+
   const handleExportCSV = () => {
     if (!teams.length) {
       alert("No registered teams to export.");
@@ -291,6 +409,10 @@ export default function AdminPortal() {
       "Member 4 Email",
       "Member 4 Roll No",
       "Member 4 Role",
+      "Assigned Problem ID",
+      "Assigned Problem Title",
+      "Assigned Mechanic Type",
+      "Assigned Mechanic Name",
       "Registered Date",
     ];
 
@@ -317,6 +439,10 @@ export default function AdminPortal() {
       `"${t.member4?.email || ""}"`,
       `"${t.member4?.rollNo || ""}"`,
       `"${t.member4?.role || ""}"`,
+      `"${t.assignedProblemId || ""}"`,
+      `"${t.assignedProblemTitle ? t.assignedProblemTitle.replace(/"/g, '""') : "Pending"}"`,
+      `"${t.assignedMechanicType || "None"}"`,
+      `"${t.assignedMechanicName || "Pending"}"`,
       `"${new Date(t.registeredAt || t.createdAt).toLocaleDateString()}"`,
     ]);
 
@@ -742,6 +868,27 @@ export default function AdminPortal() {
                   Awaiting Spin
                 </div>
               </div>
+
+              <div
+                className="pirate-panel"
+                style={{
+                  padding: "1.4rem",
+                  borderLeft: "4px solid #c084fc",
+                }}
+              >
+                <div style={{ fontSize: "0.75rem", color: "#94a3b8", fontWeight: 700 }}>
+                  POWER AWAKENED ⚡
+                </div>
+                <div
+                  className="font-heading"
+                  style={{ fontSize: "2.2rem", fontWeight: 900, color: "#c084fc", marginTop: "0.3rem" }}
+                >
+                  {stats.spunMechanicCount ?? 0}
+                </div>
+                <div style={{ fontSize: "0.72rem", color: "#e9d5ff", marginTop: "0.2rem" }}>
+                  {stats.devilFruitCount ?? 0} Fruits • {stats.hakiCount ?? 0} Hakis
+                </div>
+              </div>
             </div>
 
             {/* Filter & Search Bar */}
@@ -848,10 +995,10 @@ export default function AdminPortal() {
                 </select>
               </div>
 
-              {/* Roulette Filter */}
+              {/* Problem Roulette Filter */}
               <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                 <span style={{ fontSize: "0.82rem", color: "#94a3b8", fontWeight: 700 }}>
-                  Roulette:
+                  Problem:
                 </span>
                 <select
                   value={rouletteFilter}
@@ -867,9 +1014,36 @@ export default function AdminPortal() {
                     outline: "none",
                   }}
                 >
-                  <option value="All">All Teams</option>
+                  <option value="All">All Problems</option>
                   <option value="Spun">🎡 Spun (Assigned)</option>
                   <option value="Pending">⏳ Pending Spin</option>
+                </select>
+              </div>
+
+              {/* Awakened Power Filter */}
+              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                <span style={{ fontSize: "0.82rem", color: "#c084fc", fontWeight: 700 }}>
+                  Power:
+                </span>
+                <select
+                  value={mechanicFilter}
+                  onChange={(e) => setMechanicFilter(e.target.value)}
+                  style={{
+                    background: "rgba(17, 30, 56, 0.9)",
+                    border: "1px solid rgba(147, 51, 234, 0.4)",
+                    color: "#fef08a",
+                    padding: "0.5rem 0.8rem",
+                    borderRadius: "6px",
+                    fontSize: "0.85rem",
+                    cursor: "pointer",
+                    outline: "none",
+                  }}
+                >
+                  <option value="All">All Powers</option>
+                  <option value="Spun">⚡ Awakened (Any)</option>
+                  <option value="Devil Fruit">🍇 Devil Fruit</option>
+                  <option value="Haki">⚡ Haki Power</option>
+                  <option value="Pending">⏳ Pending Awakening</option>
                 </select>
               </div>
             </div>
@@ -932,6 +1106,7 @@ export default function AdminPortal() {
                       <th style={{ padding: "1rem", textAlign: "center" }}>Crew Size</th>
                       <th style={{ padding: "1rem" }}>Gate Status</th>
                       <th style={{ padding: "1rem", minWidth: "220px" }}>🎡 Assigned Problem</th>
+                      <th style={{ padding: "1rem", minWidth: "200px" }}>⚡ Awakened Power</th>
                       <th style={{ padding: "1rem" }}>Registered</th>
                       <th style={{ padding: "1rem", textAlign: "center" }}>Actions</th>
                     </tr>
@@ -940,7 +1115,7 @@ export default function AdminPortal() {
                     {teams.length === 0 ? (
                       <tr>
                         <td
-                          colSpan={8}
+                          colSpan={10}
                           style={{
                             padding: "3rem",
                             textAlign: "center",
@@ -1144,6 +1319,71 @@ export default function AdminPortal() {
                               )}
                             </td>
 
+                            {/* Awakened Power */}
+                            <td style={{ padding: "0.9rem 1rem", maxWidth: "230px" }}>
+                              {team.hasSpunMechanic && team.assignedMechanicName ? (
+                                <div>
+                                  <div
+                                    style={{
+                                      display: "inline-flex",
+                                      alignItems: "center",
+                                      gap: "0.3rem",
+                                      background:
+                                        team.assignedMechanicType === "Devil Fruit"
+                                          ? "rgba(147, 51, 234, 0.2)"
+                                          : "rgba(2, 132, 199, 0.2)",
+                                      border: `1px solid ${
+                                        team.assignedMechanicType === "Devil Fruit"
+                                          ? "#c084fc"
+                                          : "#38bdf8"
+                                      }`,
+                                      color:
+                                        team.assignedMechanicType === "Devil Fruit"
+                                          ? "#e9d5ff"
+                                          : "#bae6fd",
+                                      fontSize: "0.7rem",
+                                      fontWeight: 800,
+                                      padding: "0.15rem 0.5rem",
+                                      borderRadius: "999px",
+                                      marginBottom: "0.3rem",
+                                    }}
+                                  >
+                                    <span>{team.assignedMechanicType === "Devil Fruit" ? "☠️" : "⚡"}</span>
+                                    {team.assignedMechanicType}
+                                  </div>
+                                  <div style={{ fontSize: "0.82rem", color: "#fef08a", fontWeight: 800 }}>
+                                    {team.assignedMechanicName}
+                                  </div>
+                                  {team.mechanicAssignedAt && (
+                                    <div style={{ fontSize: "0.7rem", color: "#64748b", marginTop: "0.2rem" }}>
+                                      {new Date(team.mechanicAssignedAt).toLocaleTimeString([], {
+                                        hour: "2-digit",
+                                        minute: "2-digit",
+                                      })}
+                                    </div>
+                                  )}
+                                </div>
+                              ) : (
+                                <span
+                                  style={{
+                                    display: "inline-flex",
+                                    alignItems: "center",
+                                    gap: "0.3rem",
+                                    background: "rgba(147, 51, 234, 0.1)",
+                                    border: "1px solid rgba(147, 51, 234, 0.3)",
+                                    color: "#c084fc",
+                                    fontSize: "0.72rem",
+                                    fontWeight: 700,
+                                    padding: "0.2rem 0.6rem",
+                                    borderRadius: "999px",
+                                  }}
+                                >
+                                  <Clock size={11} />
+                                  Pending Power
+                                </span>
+                              )}
+                            </td>
+
                             {/* Registered Date */}
                             <td style={{ padding: "0.9rem 1rem", color: "#94a3b8", fontSize: "0.78rem" }}>
                               {new Date(team.registeredAt || team.createdAt).toLocaleDateString()}
@@ -1267,27 +1507,46 @@ export default function AdminPortal() {
                       <span>{selectedTeam.flag}</span>
                     </div>
 
-                    {/* Roulette Assignment Badge in Modal Header */}
-                    <div style={{ marginTop: "0.8rem" }}>
+                    {/* Problem and Power Assignments */}
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1rem", marginTop: "1rem" }}>
+                      {/* Roulette Assigned Problem */}
                       {selectedTeam.hasSpunRoulette && selectedTeam.assignedProblemTitle ? (
                         <div
                           style={{
                             background: "rgba(34, 197, 94, 0.12)",
                             border: "1.5px solid #22c55e",
                             borderRadius: "8px",
-                            padding: "0.8rem 1rem",
+                            padding: "0.9rem 1.1rem",
                           }}
                         >
-                          <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", color: "#4ade80", fontSize: "0.75rem", fontWeight: 800, marginBottom: "0.3rem" }}>
-                            <CheckCircle2 size={14} color="#22c55e" />
-                            ROULETTE ASSIGNED PROBLEM
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.3rem" }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", color: "#4ade80", fontSize: "0.75rem", fontWeight: 800 }}>
+                              <CheckCircle2 size={14} color="#22c55e" />
+                              ASSIGNED PROBLEM
+                            </div>
+                            <button
+                              onClick={() => handleResetProblemSpin(selectedTeam)}
+                              title="Reset problem assignment to let crew re-spin"
+                              style={{
+                                background: "rgba(239, 68, 68, 0.2)",
+                                border: "1px solid #ef4444",
+                                color: "#fca5a5",
+                                fontSize: "0.7rem",
+                                fontWeight: 700,
+                                padding: "0.15rem 0.5rem",
+                                borderRadius: "4px",
+                                cursor: "pointer",
+                              }}
+                            >
+                              Reset Spin
+                            </button>
                           </div>
-                          <div style={{ fontWeight: 800, color: "#ffffff", fontSize: "1rem", lineHeight: 1.3 }}>
+                          <div style={{ fontWeight: 800, color: "#ffffff", fontSize: "0.95rem", lineHeight: 1.3 }}>
                             <span style={{ color: "#fbbf24" }}>{selectedTeam.assignedProblemId}</span>{" "}
                             {selectedTeam.assignedProblemTitle}
                           </div>
                           {selectedTeam.assignedAt && (
-                            <div style={{ fontSize: "0.75rem", color: "#86efac", marginTop: "0.2rem" }}>
+                            <div style={{ fontSize: "0.72rem", color: "#86efac", marginTop: "0.3rem" }}>
                               Spun on: {new Date(selectedTeam.assignedAt).toLocaleString()}
                             </div>
                           )}
@@ -1297,8 +1556,8 @@ export default function AdminPortal() {
                           style={{
                             background: "rgba(245, 158, 11, 0.1)",
                             border: "1px dashed rgba(245, 158, 11, 0.4)",
-                            borderRadius: "6px",
-                            padding: "0.6rem 1rem",
+                            borderRadius: "8px",
+                            padding: "0.9rem 1.1rem",
                             color: "#fbbf24",
                             fontSize: "0.82rem",
                             fontWeight: 700,
@@ -1308,7 +1567,99 @@ export default function AdminPortal() {
                           }}
                         >
                           <Clock size={14} />
-                          Roulette not yet spun — Problem pending assignment
+                          Problem Statement Pending Spin
+                        </div>
+                      )}
+
+                      {/* Awakened Devil Fruit / Haki Power */}
+                      {selectedTeam.hasSpunMechanic && selectedTeam.assignedMechanicName ? (
+                        <div
+                          style={{
+                            background:
+                              selectedTeam.assignedMechanicType === "Devil Fruit"
+                                ? "rgba(147, 51, 234, 0.15)"
+                                : "rgba(2, 132, 199, 0.15)",
+                            border: `1.5px solid ${
+                              selectedTeam.assignedMechanicType === "Devil Fruit" ? "#c084fc" : "#38bdf8"
+                            }`,
+                            borderRadius: "8px",
+                            padding: "0.9rem 1.1rem",
+                          }}
+                        >
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.3rem" }}>
+                            <div
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "0.4rem",
+                                color: selectedTeam.assignedMechanicType === "Devil Fruit" ? "#e9d5ff" : "#bae6fd",
+                                fontSize: "0.75rem",
+                                fontWeight: 800,
+                              }}
+                            >
+                              <span>{selectedTeam.assignedMechanicType === "Devil Fruit" ? "☠️" : "⚡"}</span>
+                              AWAKENED {selectedTeam.assignedMechanicType?.toUpperCase()}
+                            </div>
+                            <button
+                              onClick={() => handleResetMechanicSpin(selectedTeam)}
+                              title="Reset awakened power to let crew re-spin"
+                              style={{
+                                background: "rgba(239, 68, 68, 0.2)",
+                                border: "1px solid #ef4444",
+                                color: "#fca5a5",
+                                fontSize: "0.7rem",
+                                fontWeight: 700,
+                                padding: "0.15rem 0.5rem",
+                                borderRadius: "4px",
+                                cursor: "pointer",
+                              }}
+                            >
+                              Reset Power
+                            </button>
+                          </div>
+                          <div style={{ fontWeight: 800, color: "#fef08a", fontSize: "1rem", lineHeight: 1.2 }}>
+                            {selectedTeam.assignedMechanicName}
+                          </div>
+                          {selectedTeam.assignedMechanicDetails && (
+                            <div style={{ fontSize: "0.76rem", color: "#cbd5e1", marginTop: "0.3rem", lineHeight: 1.4 }}>
+                              {selectedTeam.assignedMechanicType === "Devil Fruit" ? (
+                                <>
+                                  <div><strong>Effect:</strong> {selectedTeam.assignedMechanicDetails.commonEffect}</div>
+                                  <div style={{ color: "#4ade80" }}><strong>Benefit:</strong> {selectedTeam.assignedMechanicDetails.benefit}</div>
+                                  <div style={{ color: "#f87171" }}><strong>Penalty:</strong> {selectedTeam.assignedMechanicDetails.disadvantage}</div>
+                                </>
+                              ) : (
+                                <>
+                                  <div><strong>Challenge:</strong> {selectedTeam.assignedMechanicDetails.challenge}</div>
+                                  <div style={{ color: "#fcd34d" }}><strong>Pass:</strong> {selectedTeam.assignedMechanicDetails.passCondition}</div>
+                                  <div style={{ color: "#38bdf8" }}><strong>Power:</strong> {selectedTeam.assignedMechanicDetails.power}</div>
+                                </>
+                              )}
+                            </div>
+                          )}
+                          {selectedTeam.mechanicAssignedAt && (
+                            <div style={{ fontSize: "0.72rem", color: "#94a3b8", marginTop: "0.3rem" }}>
+                              Awakened on: {new Date(selectedTeam.mechanicAssignedAt).toLocaleString()}
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        <div
+                          style={{
+                            background: "rgba(147, 51, 234, 0.1)",
+                            border: "1px dashed rgba(147, 51, 234, 0.4)",
+                            borderRadius: "8px",
+                            padding: "0.9rem 1.1rem",
+                            color: "#c084fc",
+                            fontSize: "0.82rem",
+                            fontWeight: 700,
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "0.4rem",
+                          }}
+                        >
+                          <Clock size={14} />
+                          Devil Fruit / Haki Power Pending Awakening
                         </div>
                       )}
                     </div>

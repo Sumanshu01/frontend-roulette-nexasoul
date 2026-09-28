@@ -216,7 +216,29 @@ export default function Navbar() {
             }}
             onClick={() => soundFX.playWheelTick(1.2)}
           >
-            🎡 Roulette
+            🎡 Problem Roulette
+          </a>
+          <a
+            href="/#mechanics"
+            className="nav-link"
+            style={{
+              color: "#c084fc",
+              fontSize: "0.85rem",
+              fontWeight: 800,
+              textDecoration: "none",
+              display: "flex",
+              alignItems: "center",
+              gap: "0.35rem",
+              padding: "0.3rem 0.8rem",
+              borderRadius: "4px",
+              background: "rgba(147, 51, 234, 0.18)",
+              border: "1px solid rgba(147, 51, 234, 0.5)",
+              transition: "all 0.2s",
+              boxShadow: "0 0 10px rgba(147,51,234,0.2)",
+            }}
+            onClick={() => soundFX.playWheelTick(1.2)}
+          >
+            ⚡ Devil & Haki
           </a>
           <a
             href="/admin"
@@ -370,6 +392,26 @@ export default function Navbar() {
             >
               PS-01 – PS-10
             </span>
+          </a>
+          <a
+            href="/#roulette"
+            onClick={() => {
+              setMobileMenuOpen(false);
+              soundFX.playWheelTick(1.2);
+            }}
+            style={{ color: "#fbbf24", textDecoration: "none", fontWeight: 700, fontSize: "1.05rem" }}
+          >
+            🎡 Problem Title Roulette
+          </a>
+          <a
+            href="/#mechanics"
+            onClick={() => {
+              setMobileMenuOpen(false);
+              soundFX.playWheelTick(1.2);
+            }}
+            style={{ color: "#c084fc", textDecoration: "none", fontWeight: 700, fontSize: "1.05rem" }}
+          >
+            ⚡ Devil Fruit & Haki Roulette
           </a>
           <a
             href="/#jury"

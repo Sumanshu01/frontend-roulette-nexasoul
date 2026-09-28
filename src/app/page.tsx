@@ -6,6 +6,7 @@ import HeroGolDRoger from "@/components/HeroGolDRoger";
 import EventOverview from "@/components/EventOverview";
 import ProblemVault from "@/components/ProblemVault";
 import ProblemRoulette from "@/components/ProblemRoulette";
+import MechanicsRoulette from "@/components/MechanicsRoulette";
 import RegistrationPortal from "@/components/RegistrationPortal";
 import PrizesAndFleet from "@/components/PrizesAndFleet";
 import Footer from "@/components/Footer";
@@ -27,6 +28,9 @@ export default function Home() {
 
       {/* Grand Line Roulette — Team Leader Login & Problem Spin Assignment */}
       <ProblemRoulette />
+
+      {/* Devil Fruit + Haki Mechanics Dual Roulette */}
+      <MechanicsRoulette />
 
       {/* Crew Registration & Live Wanted Poster Pass Generator */}
       <RegistrationPortal />
