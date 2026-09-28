@@ -15,6 +15,15 @@ export interface ICaptain {
   github?: string;
 }
 
+export interface IMemberAttendance {
+  captain?: "present" | "absent" | "unmarked";
+  member2?: "present" | "absent" | "unmarked";
+  member3?: "present" | "absent" | "unmarked";
+  member4?: "present" | "absent" | "unmarked";
+  markedAt?: Date;
+  markedBy?: string;
+}
+
 export interface IRegisteredTeam extends Document {
   teamId: string;
   teamName: string;
@@ -31,6 +40,7 @@ export interface IRegisteredTeam extends Document {
   assignedProblemNumber?: number;
   hasSpunRoulette?: boolean;
   assignedAt?: Date;
+  memberAttendance?: IMemberAttendance;
   registeredAt: Date;
   createdAt: Date;
   updatedAt: Date;
@@ -111,6 +121,14 @@ const TeamSchema = new Schema<IRegisteredTeam>(
     assignedAt: {
       type: Date,
       default: null,
+    },
+    memberAttendance: {
+      captain: { type: String, enum: ["present", "absent", "unmarked"], default: "unmarked" },
+      member2: { type: String, enum: ["present", "absent", "unmarked"], default: "unmarked" },
+      member3: { type: String, enum: ["present", "absent", "unmarked"], default: "unmarked" },
+      member4: { type: String, enum: ["present", "absent", "unmarked"], default: "unmarked" },
+      markedAt: { type: Date, default: null },
+      markedBy: { type: String, default: null },
     },
     registeredAt: {
       type: Date,
