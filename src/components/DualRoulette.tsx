@@ -24,7 +24,10 @@ export default function DualRoulette() {
   const [tier, setTier] = useState<1 | 2>(1);
 
   // Filtered problem pool based on selected tier
-  const problemPool = PROBLEM_STATEMENTS.filter((p) => p.rouletteTier === tier);
+  const problemPool =
+    tier === 1
+      ? PROBLEM_STATEMENTS.filter((p) => [1, 2, 4, 8, 9, 10].includes(p.number))
+      : PROBLEM_STATEMENTS.filter((p) => [1, 3, 4, 5, 6, 7, 10].includes(p.number));
   const conditionPool = EVENT_DATA.specialConditions;
 
   // Spin states
@@ -228,7 +231,7 @@ export default function DualRoulette() {
           Spin Wheel 1 for your <strong>Problem Statement</strong> and Wheel 2 for your <strong>Grand Line Special Condition</strong>. Once spun, your fate is locked!
         </p>
 
-        {/* Difficulty Level Switcher (From PDF Page 6) */}
+        {/* Roulette Track Switcher */}
         <div
           style={{
             display: "inline-flex",
@@ -260,7 +263,7 @@ export default function DualRoulette() {
               transition: "all 0.2s",
             }}
           >
-            LEVEL 1: FRESHERS 1ST ROULETTE
+            ROULETTE 1: FRESHERS TRACK
           </button>
 
           <button
@@ -282,7 +285,7 @@ export default function DualRoulette() {
               transition: "all 0.2s",
             }}
           >
-            LEVELS 2 & 3: 2ND YEAR+ 2ND ROULETTE
+            ROULETTE 2: SENIOR TRACK
           </button>
         </div>
       </div>
@@ -775,18 +778,6 @@ export default function DualRoulette() {
               >
                 {assignedProblem.domain}
               </span>
-              <span
-                style={{
-                  background: "#b91c1c",
-                  color: "#fff",
-                  fontWeight: 800,
-                  fontSize: "0.75rem",
-                  padding: "0.3rem 0.8rem",
-                  borderRadius: "4px",
-                }}
-              >
-                {assignedProblem.difficulty}
-              </span>
             </div>
           </div>
 
@@ -950,6 +941,61 @@ export default function DualRoulette() {
             </div>
           </div>
 
+          {/* Proposed Solution & Theme Integration Note from PDF */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "1rem", marginBottom: "1.5rem" }}>
+            {assignedProblem.proposedSolution && (
+              <div
+                style={{
+                  background: "#fff",
+                  border: "1px solid var(--parchment-border)",
+                  borderRadius: "4px",
+                  padding: "1rem 1.2rem",
+                }}
+              >
+                <h5
+                  className="font-heading"
+                  style={{
+                    fontSize: "0.9rem",
+                    color: "#78350f",
+                    marginBottom: "0.4rem",
+                  }}
+                >
+                  💡 PROPOSED SOLUTION:
+                </h5>
+                <p style={{ fontSize: "0.95rem", lineHeight: "1.6", color: "#27150a" }}>
+                  {assignedProblem.proposedSolution}
+                </p>
+              </div>
+            )}
+
+            {assignedProblem.themeIntegration && (
+              <div
+                style={{
+                  background: "linear-gradient(135deg, rgba(185, 28, 28, 0.1) 0%, rgba(245, 158, 11, 0.1) 100%)",
+                  border: "2px solid #b91c1c",
+                  borderRadius: "6px",
+                  padding: "1rem 1.2rem",
+                }}
+              >
+                <div
+                  style={{
+                    fontSize: "0.78rem",
+                    fontWeight: 800,
+                    color: "#991b1b",
+                    letterSpacing: "1px",
+                    textTransform: "uppercase",
+                    marginBottom: "0.3rem",
+                  }}
+                >
+                  ☠️ THEME INTEGRATION NOTE:
+                </div>
+                <p style={{ fontSize: "0.95rem", lineHeight: "1.6", color: "#450a0a", fontStyle: "italic" }}>
+                  &ldquo;{assignedProblem.themeIntegration}&rdquo;
+                </p>
+              </div>
+            )}
+          </div>
+
           {/* Footer of Card */}
           <div
             style={{
@@ -963,7 +1009,7 @@ export default function DualRoulette() {
             }}
           >
             <div style={{ fontSize: "0.85rem", color: "#78350f" }}>
-              Grand Line Bounty: <strong>{assignedProblem.bounty}</strong>
+              Assigned Problem: <strong>{assignedProblem.id} (#{assignedProblem.number})</strong>
             </div>
 
             <button

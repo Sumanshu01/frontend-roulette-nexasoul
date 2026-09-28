@@ -4,7 +4,7 @@ import React from "react";
 import Image from "next/image";
 import { soundFX } from "@/utils/soundEffects";
 import { EVENT_DATA } from "@/data/eventInfo";
-import { Compass, Sparkles, MapPin, Calendar, Clock, Users, Trophy } from "lucide-react";
+import { Compass, Sparkles, MapPin, Calendar, Clock, Users, Trophy, BookOpen } from "lucide-react";
 
 export default function HeroGolDRoger() {
 
@@ -293,8 +293,17 @@ export default function HeroGolDRoger() {
               </a>
 
               <a
-                href="#overview"
+                href="#problems"
                 className="btn-pirate-gold"
+                onClick={() => soundFX.playWheelTick(1.2)}
+              >
+                <BookOpen size={18} />
+                10 Problem Statements
+              </a>
+
+              <a
+                href="#overview"
+                className="btn-pirate-secondary"
                 onClick={() => soundFX.playWheelTick(1.2)}
               >
                 <Compass size={18} />

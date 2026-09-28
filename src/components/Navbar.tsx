@@ -139,6 +139,36 @@ export default function Navbar() {
             Overview
           </a>
           <a
+            href="/#problems"
+            className="nav-link"
+            style={{
+              color: "#fbbf24",
+              fontSize: "0.9rem",
+              fontWeight: 700,
+              textDecoration: "none",
+              transition: "color 0.2s",
+              display: "flex",
+              alignItems: "center",
+              gap: "0.4rem",
+            }}
+            onClick={() => soundFX.playWheelTick(1.2)}
+          >
+            <span>Problem Statements</span>
+            <span
+              style={{
+                fontSize: "0.7rem",
+                fontWeight: 900,
+                background: "#991b1b",
+                color: "#fef08a",
+                padding: "0.1rem 0.45rem",
+                borderRadius: "999px",
+                border: "1px solid #fbbf24",
+              }}
+            >
+              10
+            </span>
+          </a>
+          <a
             href="/#jury"
             className="nav-link"
             style={{
@@ -288,6 +318,36 @@ export default function Navbar() {
             style={{ color: "#e2e8f0", textDecoration: "none", fontWeight: 600, fontSize: "1.1rem" }}
           >
             📜 Event Overview
+          </a>
+          <a
+            href="/#problems"
+            onClick={() => {
+              setMobileMenuOpen(false);
+              soundFX.playWheelTick(1.2);
+            }}
+            style={{
+              color: "#fbbf24",
+              textDecoration: "none",
+              fontWeight: 700,
+              fontSize: "1.1rem",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            <span>🧭 10 Problem Statements</span>
+            <span
+              style={{
+                fontSize: "0.72rem",
+                background: "#991b1b",
+                color: "#fef08a",
+                padding: "0.15rem 0.5rem",
+                borderRadius: "999px",
+                border: "1px solid #fbbf24",
+              }}
+            >
+              PS-01 – PS-10
+            </span>
           </a>
           <a
             href="/#jury"
